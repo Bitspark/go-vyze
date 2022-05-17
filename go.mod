@@ -1,3 +1,3 @@
-module github.com/Bitspark/go-vyze
+module github.com/Bitspark/vyze-go
 
 go 1.18

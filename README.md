@@ -1,4 +1,4 @@
-# go-vyze
+# VYZE for Go
 
 Go client for VYZE.
 
