@@ -1,0 +1,510 @@
+id: 57e91be321f5bc7d8882ffffdf1ad539
+name: vision
+description: Universe vision created on July 17, 2022.
+bases:
+  - base
+  - data
+dependencies:
+  - base
+objects:
+  - base.object
+  - base.object#relation
+  - base.object#relation/
+  - base.object#relation/data
+  - base.object/
+  - base.object/data
+  - box
+  - box#dim_x
+  - box#dim_y
+  - box#image
+  - box#model
+  - box#pos_x
+  - box#pos_y
+  - box@dim_x
+  - box@dim_y
+  - box@pos_x
+  - box@pos_y
+  - camera
+  - canvas_point
+  - canvas_point#auto
+  - canvas_point#image
+  - canvas_point#model_point
+  - canvas_point#pos_x
+  - canvas_point#pos_y
+  - canvas_point@auto
+  - canvas_point@pos_x
+  - canvas_point@pos_y
+  - data.@boolean
+  - data.@boolean/
+  - data.@data
+  - data.@data/
+  - data.@float
+  - data.@float/
+  - data.@integer
+  - data.@integer/
+  - data.@string
+  - data.@string/
+  - image
+  - image#camera
+  - image#format
+  - image#jpeg_preview_128
+  - image#png_preview_24
+  - image#scene
+  - image@format
+  - image@jpeg_preview_128
+  - image@png_preview_24
+  - jpeg_image
+  - model
+  - model#part
+  - model@name
+  - model_point
+  - model_point#model
+  - png_image
+  - scene
+  - scene#model
+  - sequence
+  - sequence#camera
+  - sequence#frame
+  - sequence#scene
+  - sequence@name
+info:
+  - mapping: base.object
+    type: model
+    object: 8dd3136b1a6825a7a5f60d7664a6ffd2
+    description: Model object automatically created from system module base.
+  - mapping: base.object#relation
+    type: field
+    object: 6dd746b37d4254e82b8fc22c98176d8f
+    description: Field object#relation automatically created from system module base.
+  - mapping: base.object#relation/
+    type: field
+    object: 50449f05e835137e8688dfeec93f2f0b
+    description: Field object#relation automatically created from system module base.
+  - mapping: base.object#relation/data
+    type: field
+    object: db2c8bce27f08dc28c47f3bc1154ec94
+    description: Field object#relation automatically created from system module base.
+  - mapping: base.object/
+    type: model
+    object: 591cae146dc2750545ff6cf2eba0efa3
+    description: Model object automatically created from system module base.
+  - mapping: base.object/data
+    type: model
+    object: 5ece0363259804ea9df002464bdc18dc
+    description: Model object automatically created from system module base.
+  - mapping: box
+    type: model
+    object: e0425d1deee9aa938b3589e9c958624e
+  - mapping: box#dim_x
+    type: field
+    object: 64f3d59be68d9103f34a71b1c5243339
+  - mapping: box#dim_y
+    type: field
+    object: 88b4d9e677c942d5ec8e01c533b33da7
+  - mapping: box#image
+    type: field
+    object: 08d031dea85a09d4b29cd19ecd2e3a26
+  - mapping: box#model
+    type: field
+    object: e4c49474d8e98add9294e21eeeaafdb8
+  - mapping: box#pos_x
+    type: field
+    object: 32fc03b08a22eedf3dd3c684ac8af74e
+  - mapping: box#pos_y
+    type: field
+    object: 870dd2978a22748ac8357021ede1120a
+  - mapping: box@dim_x
+    type: value
+    object: 18f6bf577ef8cd13573669edf66c131d
+  - mapping: box@dim_y
+    type: value
+    object: 5c7e02810833ce845e4e769db2107089
+  - mapping: box@pos_x
+    type: value
+    object: fdef111c5f7ab7ae348459134d74b62d
+  - mapping: box@pos_y
+    type: value
+    object: 4f895701a02fc11763d79a3ebc206a97
+  - mapping: camera
+    type: model
+    object: 33658db70b588df3d3c9a2e802336f2a
+  - mapping: canvas_point
+    type: model
+    object: 16b462f2861bbb0f4930c95d10df0116
+    description: Model canvas_point created by vision.
+  - mapping: canvas_point#auto
+    type: field
+    object: 129ad3df3c32fac7e18c7b0add2bd529
+    description: Field canvas_point#auto created by vision.
+  - mapping: canvas_point#image
+    type: field
+    object: d773f6c1c1e38a2f90493367a08c88db
+    description: Field canvas_point#image created by vision.
+  - mapping: canvas_point#model_point
+    type: field
+    object: cbc0bedb9af6febc879f34b731462f96
+    description: Field canvas_point#model_point created by vision.
+  - mapping: canvas_point#pos_x
+    type: field
+    object: 302d4518c45dbd04dca85511054ba187
+    description: Field canvas_point#pos_x created by vision.
+  - mapping: canvas_point#pos_y
+    type: field
+    object: d01cd4307608eee5517bbe76306ce4e4
+    description: Field canvas_point#pos_y created by vision.
+  - mapping: canvas_point@auto
+    type: value
+    object: 9cb9e840c2a942a95af311fab756e3f7
+    description: Extension of @boolean created by vision.
+  - mapping: canvas_point@pos_x
+    type: value
+    object: 356ef2f96c21f7c1d3665b46c4bd4ea3
+    description: Extension of @float created by vision.
+  - mapping: canvas_point@pos_y
+    type: value
+    object: 0cadd1a6bcd51f025bb9e1fd77d182ca
+    description: Extension of @float created by vision.
+  - mapping: data.@boolean
+    type: value
+    object: 0042a6cd9c3ef79617558b93785ba002
+    description: Value type @boolean automatically created from system module data.
+  - mapping: data.@boolean/
+    type: value
+    object: 8bf734d5aa296d72a3271aa474469484
+    description: Value type @boolean automatically created from system module data.
+  - mapping: data.@data
+    type: value
+    object: d700d85522b5db7a7241e7746e49ca43
+    description: Value type @data automatically created from system module data.
+  - mapping: data.@data/
+    type: value
+    object: de2711ee4a4554b7075ee33f47229275
+    description: Value type @data automatically created from system module data.
+  - mapping: data.@float
+    type: value
+    object: fdfff5395b22204676d444a8013e3da1
+    description: Value type @float automatically created from system module data.
+  - mapping: data.@float/
+    type: value
+    object: 937783c380e0f45c1236e583968c3b05
+    description: Value type @float automatically created from system module data.
+  - mapping: data.@integer
+    type: value
+    object: 66c059acd21de01194da6b27b8bcd447
+    description: Value type @integer automatically created from system module data.
+  - mapping: data.@integer/
+    type: value
+    object: ed793234c061401cfa0c828b99faafea
+    description: Value type @integer automatically created from system module data.
+  - mapping: data.@string
+    type: value
+    object: 3eb6715763ccf1b98a09613787ed9f0c
+    description: Value type @string automatically created from system module data.
+  - mapping: data.@string/
+    type: value
+    object: c024b144ce1c6f91332d5783742d2603
+    description: Value type @string automatically created from system module data.
+  - mapping: image
+    type: model
+    object: 8a40cac8a371e8120a606cffa69f028e
+    description: Model image created by User_145042351df34f8a.
+  - mapping: image#camera
+    type: field
+    object: 8f5530ff2d84e4242424156cc5be23f9
+  - mapping: image#format
+    type: field
+    object: f55448a3b09cf13f3ab868734c71a57c
+    description: Field image#format created by vision.
+  - mapping: image#jpeg_preview_128
+    type: field
+    object: 6fab031c299b6b2af481b457349dd4e9
+  - mapping: image#png_preview_24
+    type: field
+    object: 9d41caf806ae47a60d3c156fa5742c67
+    description: Field image#png_preview_24 created by vision.
+  - mapping: image#scene
+    type: field
+    object: 6ce2da05ef8a0eb9226a6ff883eb288a
+  - mapping: image@format
+    type: value
+    object: 320deb42aea7c9dc9680e8c80ef25749
+    description: Extension of @string created by vision.
+  - mapping: image@jpeg_preview_128
+    type: value
+    object: 5fa0425d78852fc9f7fa340a3d0d17e5
+  - mapping: image@png_preview_24
+    type: value
+    object: c7ef51cab29fc6b7d1b5294148661231
+    description: Extension of @data created by vision.
+  - mapping: jpeg_image
+    type: model
+    object: 19d53b8158b56c1328e1f92d2c0796e0
+    description: Model jpeg_image created by vision.
+  - mapping: model
+    type: model
+    object: c258db6e7a1636e8be6e8477305e34f5
+    description: Model model created by vision.
+  - mapping: model#part
+    type: field
+    object: 4eb36d83959595e825988ecaf28248c8
+  - mapping: model@name
+    type: value
+    object: 0a8fcbb665a4b0d3d5646d53f56023f1
+    description: Extension of @string created by vision.
+  - mapping: model_point
+    type: model
+    object: b77ed1325b06afc25897d34613c0d26d
+    description: Model model_point created by vision.
+  - mapping: model_point#model
+    type: field
+    object: ed8809926a148f8126ad7a78442859b2
+    description: Field model_point#model created by vision.
+  - mapping: png_image
+    type: model
+    object: 0931da237fb3a76b059360a91cec7b2b
+    description: Model png_image created by vision.
+  - mapping: scene
+    type: model
+    object: 371781c9a661da94ca8bdc945429fd83
+  - mapping: scene#model
+    type: field
+    object: c69d58a62de2b948f690ec192c445548
+  - mapping: sequence
+    type: model
+    object: 24cc21abee04940d4910e7bf37103b3d
+  - mapping: sequence#camera
+    type: field
+    object: 20afa2779acc2e8dd49f646c743cabbe
+  - mapping: sequence#frame
+    type: field
+    object: c8c340c412ab72e7118a41b71bae44a1
+  - mapping: sequence#scene
+    type: field
+    object: efdc0821de73f9b17af4f23aa1ddf1c5
+  - mapping: sequence@name
+    type: value
+    object: 531de0d65b056e1bd0c25d062f6928bd
+relations:
+  - base.object#relation:base.object:base.object
+  - base.object#relation/:base.object/:base.object
+  - base.object#relation/data:base.object/data:base.object
+  - box#dim_x:box:box@dim_x
+  - box#dim_y:box:box@dim_y
+  - box#image:box:image
+  - box#model:box:model
+  - box#pos_x:box:box@pos_x
+  - box#pos_y:box:box@pos_y
+  - canvas_point#auto:canvas_point:canvas_point@auto
+  - canvas_point#image:canvas_point:image
+  - canvas_point#model_point:canvas_point:model_point
+  - canvas_point#pos_x:canvas_point:canvas_point@pos_x
+  - canvas_point#pos_y:canvas_point:canvas_point@pos_y
+  - image#camera:image:camera
+  - image#format:image:image@format
+  - image#jpeg_preview_128:image:image@jpeg_preview_128
+  - image#png_preview_24:image:image@png_preview_24
+  - image#scene:image:scene
+  - model#part:model:model
+  - model_point#model:model_point:model
+  - scene#model:scene:model
+  - sequence#camera:sequence:camera
+  - sequence#frame:sequence:image
+  - sequence#scene:sequence:scene
+abstractions:
+  - base.object:base.object#relation
+  - base.object:base.object/data
+  - base.object#relation:base.object#relation/data
+  - base.object#relation/:box#dim_x
+  - base.object#relation/:box#dim_y
+  - base.object#relation/:box#image
+  - base.object#relation/:box#model
+  - base.object#relation/:box#pos_x
+  - base.object#relation/:box#pos_y
+  - base.object#relation/:canvas_point#auto
+  - base.object#relation/:canvas_point#image
+  - base.object#relation/:canvas_point#model_point
+  - base.object#relation/:canvas_point#pos_x
+  - base.object#relation/:canvas_point#pos_y
+  - base.object#relation/:image#camera
+  - base.object#relation/:image#format
+  - base.object#relation/:image#jpeg_preview_128
+  - base.object#relation/:image#png_preview_24
+  - base.object#relation/:image#scene
+  - base.object#relation/:model#part
+  - base.object#relation/:model_point#model
+  - base.object#relation/:scene#model
+  - base.object#relation/:sequence#camera
+  - base.object#relation/:sequence#frame
+  - base.object#relation/:sequence#scene
+  - base.object#relation/data:base.object#relation/
+  - base.object/:base.object#relation/
+  - base.object/:box
+  - base.object/:camera
+  - base.object/:canvas_point
+  - base.object/:data.@data/
+  - base.object/:image
+  - base.object/:model
+  - base.object/:model_point
+  - base.object/:scene
+  - base.object/:sequence
+  - base.object/data:base.object#relation/data
+  - base.object/data:base.object/
+  - base.object/data:data.@data
+  - data.@boolean:data.@boolean/
+  - data.@boolean/:canvas_point@auto
+  - data.@data:data.@boolean
+  - data.@data:data.@data/
+  - data.@data:data.@float
+  - data.@data:data.@integer
+  - data.@data:data.@string
+  - data.@data/:data.@boolean/
+  - data.@data/:data.@float/
+  - data.@data/:data.@integer/
+  - data.@data/:data.@string/
+  - data.@data/:image@jpeg_preview_128
+  - data.@data/:image@png_preview_24
+  - data.@float:data.@float/
+  - data.@float/:box@dim_x
+  - data.@float/:box@dim_y
+  - data.@float/:box@pos_x
+  - data.@float/:box@pos_y
+  - data.@float/:canvas_point@pos_x
+  - data.@float/:canvas_point@pos_y
+  - data.@integer:data.@integer/
+  - data.@string:data.@string/
+  - data.@string/:image@format
+  - data.@string/:model@name
+  - data.@string/:sequence@name
+  - image:jpeg_image
+  - image:png_image
+endpoints:
+  - id: ad8e8c13cc0939c749f9ad2cfa47f68c
+    name: Image
+    node:
+      type: map
+      map:
+        entries:
+          camera:
+            type: context
+            context:
+              type: relation
+              relation:
+                type: primitive
+                relation: vision.image#camera/vision
+                reverse: false
+              context: null
+              node:
+                type: value
+                value:
+                  field: id
+                  format: hex
+          format:
+            type: context
+            context:
+              type: relation
+              relation:
+                type: primitive
+                relation: vision.image#format/vision
+                reverse: false
+              context: null
+              node:
+                type: value
+                value:
+                  field: data
+                  format: string
+          id:
+            type: value
+            value:
+              field: id
+              format: hex
+          name:
+            type: value
+            value:
+              field: name
+              format: string
+          scene:
+            type: context
+            context:
+              type: relation
+              relation:
+                type: primitive
+                relation: vision.image#scene/vision
+                reverse: false
+              context: null
+              node:
+                type: reference
+                reference:
+                  name: Scene
+    environment:
+      type: primitive
+      model: vision.image/vision
+  - id: 9a93c48db9d33c7e97dd49cffdf94ad2
+    name: Scene
+    node:
+      type: map
+      map:
+        entries:
+          id:
+            type: value
+            value:
+              field: id
+              format: hex
+          models:
+            type: context
+            context:
+              type: relation
+              relation:
+                type: primitive
+                relation: vision.scene#model/vision
+                reverse: false
+              context: null
+              node:
+                type: map
+                map:
+                  entries:
+                    id:
+                      type: value
+                      value:
+                        field: id
+                        format: hex
+                    name:
+                      type: value
+                      value:
+                        field: name
+                        format: string
+                    parts:
+                      type: context
+                      context:
+                        type: relation
+                        relation:
+                          type: list
+                          relation: vision.model#part/vision
+                          reverse: false
+                        context: null
+                        node:
+                          type: list
+                          list:
+                            entry:
+                              type: map
+                              map:
+                                entries:
+                                  id:
+                                    type: value
+                                    value:
+                                      field: id
+                                      format: hex
+                                  name:
+                                    type: value
+                                    value:
+                                      field: name
+                                      format: string
+                            filter: {}
+                            order: {}
+          name:
+            type: value
+            value:
+              field: name
+              format: string
+    environment:
+      type: primitive
+      model: vision.scene/vision

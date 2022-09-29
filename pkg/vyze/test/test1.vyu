@@ -1,0 +1,118 @@
+name: test1
+description: Universe test1 created on June 6, 2022.
+bases:
+    - data
+dependencies:
+    - base
+objects:
+    - base.object
+    - base.object#relation/
+    - base.object#relation/data
+    - base.object/
+    - base.object/data
+    - data.@boolean
+    - data.@boolean/
+    - data.@data
+    - data.@data/
+    - data.@float
+    - data.@float/
+    - data.@integer
+    - data.@integer/
+    - data.@string
+    - data.@string/
+    - test_model1
+    - test_model1#integer
+    - test_model1@integer
+info:
+    - mapping: base.object
+      type: model
+      object: 17259b1d9dc856ed807536718fbe1b7d
+      description: Model object automatically created from system module base.
+    - mapping: base.object#relation/
+      type: field
+      object: a5496818ec2d55e3e110652cce9209f8
+      description: Field object#relation automatically created from system module base.
+    - mapping: base.object#relation/data
+      type: field
+      object: 2caa5b703ba44ba00bd4acfb86e2b9e8
+      description: Field object#relation automatically created from system module base.
+    - mapping: base.object/
+      type: model
+      object: b8bb6dc3cbb9d5a496bc43ec647d587c
+      description: Model object automatically created from system module base.
+    - mapping: base.object/data
+      type: model
+      object: 13fca693bbfa881fcc821250747a7c33
+      description: Model object automatically created from system module base.
+    - mapping: data.@boolean
+      type: value
+      object: fd34c29db9480b4593c3fcacce9a1500
+      description: Value type @boolean automatically created from system module data.
+    - mapping: data.@boolean/
+      type: value
+      object: 080e4ad696d3de6296c2fb24d4ea817c
+      description: Value type @boolean automatically created from system module data.
+    - mapping: data.@data
+      type: value
+      object: 4f9af5a0acb8b3cf688913c35451e864
+      description: Value type @data automatically created from system module data.
+    - mapping: data.@data/
+      type: value
+      object: bd3a8a6822ad92daa081ba6af39cc228
+      description: Value type @data automatically created from system module data.
+    - mapping: data.@float
+      type: value
+      object: d0e6ebb01d686475e652f5023dde986b
+      description: Value type @float automatically created from system module data.
+    - mapping: data.@float/
+      type: value
+      object: 4f57f929eea175a2e2a3e327c8d6b38b
+      description: Value type @float automatically created from system module data.
+    - mapping: data.@integer
+      type: value
+      object: 1f20d5f6699ff29a40079aff68c497ba
+      description: Value type @integer automatically created from system module data.
+    - mapping: data.@integer/
+      type: value
+      object: 670aa2422ac2ad5a0c723743c1577704
+      description: Value type @integer automatically created from system module data.
+    - mapping: data.@string
+      type: value
+      object: 116143227f06f466ad1356a43351544d
+      description: Value type @string automatically created from system module data.
+    - mapping: data.@string/
+      type: value
+      object: 305557a857483e28e4e9e54e1d1c0fb4
+      description: Value type @string automatically created from system module data.
+    - mapping: test_model1
+      type: model
+      object: 5f47c1c9e5a18cc4de1acd2990c6e317
+      description: Model test_model1 created by User_d4b28a1300b6c81c.
+    - mapping: test_model1#integer
+      type: field
+      object: 2c3f0a1e3912bb59cce14b037ade67f5
+      description: Field test_model1#integer created by User_d4b28a1300b6c81c.
+    - mapping: test_model1@integer
+      type: value
+      object: 5787b41b0ac951e6ee1573e01d9bf1f7
+      description: Extension of @integer created by User_d4b28a1300b6c81c.
+relations:
+    - base.object#relation/:base.object/:base.object
+    - test_model1#integer:test_model1:test_model1@integer
+abstractions:
+    - base.object#relation/data:base.object#relation/
+    - base.object/:base.object#relation/
+    - base.object/:data.@data/
+    - base.object/data:base.object/
+    - data.@boolean:data.@boolean/
+    - data.@data:data.@data/
+    - base.object#relation/:test_model1#integer
+    - base.object/:test_model1
+    - data.@data/:data.@boolean/
+    - data.@data/:data.@float/
+    - data.@float:data.@float/
+    - data.@data/:data.@integer/
+    - data.@data/:data.@string/
+    - data.@integer:data.@integer/
+    - data.@integer/:test_model1@integer
+    - data.@string:data.@string/

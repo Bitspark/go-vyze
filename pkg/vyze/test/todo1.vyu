@@ -1,0 +1,542 @@
+id: 51438351d24feb9e497cd24fd5dd51fa
+name: todo1
+description: Universe todo1 created on August 7, 2022.
+bases:
+  - base
+  - data
+dependencies:
+  - base
+objects:
+  - base.object
+  - base.object#relation
+  - base.object#relation/
+  - base.object#relation/data
+  - base.object/
+  - base.object/data
+  - data.@boolean
+  - data.@boolean/
+  - data.@data
+  - data.@data/
+  - data.@float
+  - data.@float/
+  - data.@integer
+  - data.@integer/
+  - data.@string
+  - data.@string/
+  - lane
+  - lane#title
+  - lane@title
+  - task
+  - task#description
+  - task#lane
+  - task#title
+  - task@description
+  - task@title
+info:
+  - mapping: base.object
+    type: model
+    object: 6f20513d0fe22a5fa46350574fba8b61
+    description: Model object automatically created from system module base.
+  - mapping: base.object#relation
+    type: field
+    object: 053ce4335a407eaf075d84ecc359d297
+    description: Field object#relation automatically created from system module base.
+  - mapping: base.object#relation/
+    type: field
+    object: d4cee60840fa60e2788f808b1680794f
+    description: Field object#relation automatically created from system module base.
+  - mapping: base.object#relation/data
+    type: field
+    object: 009c17f8bd1066c32d841354256fe979
+    description: Field object#relation automatically created from system module base.
+  - mapping: base.object/
+    type: model
+    object: 73d36bc9599d15117b70e1544c85d5ff
+    description: Model object automatically created from system module base.
+  - mapping: base.object/data
+    type: model
+    object: 1afda5aed24dc013e814d213f681c440
+    description: Model object automatically created from system module base.
+  - mapping: data.@boolean
+    type: value
+    object: ffb9590ca57e9a1b323ee2245a2bbfdc
+    description: Value type @boolean automatically created from system module data.
+  - mapping: data.@boolean/
+    type: value
+    object: 94c318c85548062d141ba07c45f999cb
+    description: Value type @boolean automatically created from system module data.
+  - mapping: data.@data
+    type: value
+    object: 867df4ecc459b965d7082b45e8158314
+    description: Value type @data automatically created from system module data.
+  - mapping: data.@data/
+    type: value
+    object: 4d61736b7ca3affbf268dd4a4e910b8c
+    description: Value type @data automatically created from system module data.
+  - mapping: data.@float
+    type: value
+    object: a0aab3911f38b4fb54c9a262f49ecb42
+    description: Value type @float automatically created from system module data.
+  - mapping: data.@float/
+    type: value
+    object: 73edb9c22779b2f447549f1a3e1f3435
+    description: Value type @float automatically created from system module data.
+  - mapping: data.@integer
+    type: value
+    object: a4c65ea9066b21f592815caa44f504e8
+    description: Value type @integer automatically created from system module data.
+  - mapping: data.@integer/
+    type: value
+    object: 255587d6b0af833e4c1f655b7e057994
+    description: Value type @integer automatically created from system module data.
+  - mapping: data.@string
+    type: value
+    object: e3cd0bfe23641bafd70aee3849352796
+    description: Value type @string automatically created from system module data.
+  - mapping: data.@string/
+    type: value
+    object: f42459260ef761e64a0a67339bb3b963
+    description: Value type @string automatically created from system module data.
+  - mapping: lane
+    type: model
+    object: 847662265e38904c00074ea05a746d09
+  - mapping: lane#title
+    type: field
+    object: d271c20ebd828ddbd88409c0e4cf7b46
+  - mapping: lane@title
+    type: value
+    object: 76b0b57fcdc5a36d8bbe576d4815a316
+  - mapping: task
+    type: model
+    object: e97c38b3410736161f54e6859c6405cd
+  - mapping: task#description
+    type: field
+    object: 4871f81658875365d4bdf6cf95a4f984
+  - mapping: task#lane
+    type: field
+    object: 3c1ad1320b66718edb15f3b1de01f590
+  - mapping: task#title
+    type: field
+    object: c5eabbfd1b8d2d6acf0b0c28932be75e
+  - mapping: task@description
+    type: value
+    object: ad012f9f404a757d3e46e983c46c4abf
+  - mapping: task@title
+    type: value
+    object: d22f68a0dada5a51b6c061999745932f
+relations:
+  - base.object#relation:base.object:base.object
+  - base.object#relation/:base.object/:base.object
+  - base.object#relation/data:base.object/data:base.object
+  - lane#title:lane:lane@title
+  - task#description:task:task@description
+  - task#lane:task:lane
+  - task#title:task:task@title
+abstractions:
+  - base.object:base.object#relation
+  - base.object:base.object/data
+  - base.object#relation:base.object#relation/data
+  - base.object#relation/:lane#title
+  - base.object#relation/:task#description
+  - base.object#relation/:task#lane
+  - base.object#relation/:task#title
+  - base.object#relation/data:base.object#relation/
+  - base.object/:base.object#relation/
+  - base.object/:data.@data/
+  - base.object/:lane
+  - base.object/:task
+  - base.object/data:base.object#relation/data
+  - base.object/data:base.object/
+  - base.object/data:data.@data
+  - data.@boolean:data.@boolean/
+  - data.@data:data.@boolean
+  - data.@data:data.@data/
+  - data.@data:data.@float
+  - data.@data:data.@integer
+  - data.@data:data.@string
+  - data.@data/:data.@boolean/
+  - data.@data/:data.@float/
+  - data.@data/:data.@integer/
+  - data.@data/:data.@string/
+  - data.@float:data.@float/
+  - data.@integer:data.@integer/
+  - data.@string:data.@string/
+  - data.@string/:lane@title
+  - data.@string/:task@description
+  - data.@string/:task@title
+endpoints:
+  - type: get
+    id: 76917b4a1b55a5145aa5017cf41b19e1
+    name: getLane
+    node:
+      type: map
+      map:
+        entries:
+        - name: id
+          node:
+            type: value
+            value:
+              field: id
+              format: hex
+        - name: title
+          node:
+            type: relation
+            relation:
+              type: primitive
+              relation: lane#title
+              reverse: false
+              node:
+                type: value
+                value:
+                  field: data
+                  format: string
+    context:
+      environment:
+        type: primitive
+        model: todo1.lane/todo1
+    interface:
+      type: reference
+      reference:
+        name: Lane
+  - type: get
+    id: 6d0b40b05111bfb1d735833b8a465626
+    name: getLaneWithTasks
+    node:
+      type: map
+      map:
+        entries:
+        - name: id
+          node:
+            type: value
+            value:
+              field: id
+              format: hex
+        - name: tasks
+          node:
+            type: relation
+            relation:
+              type: list
+              relation: task#lane
+              reverse: true
+              node:
+                type: list
+                list:
+                  entry:
+                    type: reference
+                    reference:
+                      name: getTask
+        - name: title
+          node:
+            type: relation
+            relation:
+              type: primitive
+              relation: lane#title
+              reverse: false
+              node:
+                type: value
+                value:
+                  field: data
+                  format: string
+    context:
+      environment:
+        type: primitive
+        model: todo1.lane/todo1
+    interface:
+      type: reference
+      reference:
+        name: LaneWithTasks
+  - type: get
+    id: a8cd8070b4e7ee75680646b1b5d37703
+    name: getLanesWithTasks
+    node:
+      type: specials
+      specials:
+        type: list
+        direct: true
+        indirect: true
+        node:
+          type: list
+          list:
+            entry:
+              type: reference
+              reference:
+                name: getLaneWithTasks
+    context:
+      environment:
+        type: primitive
+        model: todo1.lane/todo1
+      value: lane
+    interface:
+      type: list
+      list:
+        entry:
+          type: reference
+          reference:
+            name: LaneWithTasks
+  - type: get
+    id: 007aa2bc8e51bd58bfd7d903916e3af8
+    name: getTask
+    node:
+      type: map
+      map:
+        entries:
+        - name: description
+          node:
+            type: relation
+            relation:
+              type: primitive
+              relation: task#description
+              reverse: false
+              node:
+                type: value
+                value:
+                  field: data
+                  format: string
+        - name: id
+          node:
+            type: value
+            value:
+              field: id
+              format: hex
+        - name: title
+          node:
+            type: relation
+            relation:
+              type: primitive
+              relation: task#title
+              reverse: false
+              node:
+                type: value
+                value:
+                  field: data
+                  format: string
+    context:
+      environment:
+        type: primitive
+        model: todo1.task/todo1
+    interface:
+      type: reference
+      reference:
+        name: Task
+  - type: put
+    id: 71555bb4a7c472f7bf4039fa513d7769
+    name: putLane
+    node:
+      type: map
+      map:
+        entries:
+        - name: id
+          node:
+            type: value
+            value:
+              field: id
+              format: hex
+        - name: title
+          node:
+            type: relation
+            relation:
+              type: primitive
+              relation: lane#title
+              reverse: false
+              node:
+                type: value
+                value:
+                  field: data
+                  format: string
+    context:
+      environment:
+        type: primitive
+        model: todo1.lane/todo1
+    interface:
+      type: reference
+      reference:
+        name: Lane
+  - type: put
+    id: 4527e400b3531c2fb67a6ce7ecb7217a
+    name: putLaneSpecial
+    node:
+      type: specials
+      specials:
+        type: primitive
+        direct: true
+        indirect: true
+        node:
+          type: reference
+          reference:
+            name: putLane
+    context:
+      environment:
+        type: primitive
+        model: todo1.lane/todo1
+      value: lane
+    interface:
+      type: reference
+      reference:
+        name: Lane
+  - type: put
+    id: 827803baeb681d8cc7de138b4580d360
+    name: putTask
+    node:
+      type: map
+      map:
+        entries:
+        - name: description
+          node:
+            type: relation
+            relation:
+              type: primitive
+              relation: task#description
+              reverse: false
+              node:
+                type: value
+                value:
+                  field: data
+                  format: string
+        - name: id
+          node:
+            type: value
+            value:
+              field: id
+              format: hex
+        - name: lane
+          node:
+            type: relation
+            relation:
+              type: primitive
+              relation: task#lane
+              reverse: false
+              node:
+                type: value
+                value:
+                  field: id
+                  format: hex
+        - name: title
+          node:
+            type: relation
+            relation:
+              type: primitive
+              relation: task#title
+              reverse: false
+              node:
+                type: value
+                value:
+                  field: data
+                  format: string
+    context:
+      environment:
+        type: primitive
+        model: todo1.task/todo1
+    interface:
+      type: reference
+      reference:
+        name: TaskWithLane
+  - type: put
+    id: 3df0dab0b5fbf0b6c20628fb27b1eb18
+    name: putTaskSpecial
+    node:
+      type: specials
+      specials:
+        type: primitive
+        direct: true
+        indirect: true
+        node:
+          type: reference
+          reference:
+            name: putTask
+    context:
+      environment:
+        type: primitive
+        model: todo1.task/todo1
+      value: task
+interfaces:
+  - id: 525aad7c4bf915f8afd51c2b61e98951
+    name: Lane
+    schema:
+      type: map
+      map:
+        entries:
+          - key: id
+            schema:
+              type: primitive
+              primitive:
+                model: todo1.lane/todo1
+                value: id
+          - key: title
+            schema:
+              type: primitive
+              primitive:
+                value: string
+  - id: 4057aa123c90031f154cea4a81fddb92
+    name: LaneWithTasks
+    schema:
+      type: map
+      map:
+        entries:
+          - key: title
+            schema:
+              type: primitive
+              primitive:
+                value: string
+          - key: id
+            schema:
+              type: primitive
+              primitive:
+                model: todo1.lane/todo1
+                value: id
+          - key: tasks
+            schema:
+              type: list
+              list:
+                entry:
+                  type: reference
+                  reference:
+                    name: Task
+  - id: ac9084f438d406734b35a13fd3c96d3a
+    name: Task
+    schema:
+      type: map
+      map:
+        entries:
+          - key: description
+            schema:
+              type: primitive
+              primitive:
+                value: string
+          - key: id
+            schema:
+              type: primitive
+              primitive:
+                model: todo1.task/todo1
+                value: id
+          - key: title
+            schema:
+              type: primitive
+              primitive:
+                value: string
+  - id: 35bfb90f17ebe1abde2b62e4b59413ca
+    name: TaskWithLane
+    schema:
+      type: map
+      map:
+        entries:
+          - key: description
+            schema:
+              type: primitive
+              primitive:
+                value: string
+          - key: id
+            schema:
+              type: primitive
+              primitive:
+                model: todo1.task/todo1
+                value: id
+          - key: lane
+            schema:
+              type: primitive
+              primitive:
+                value: id
+          - key: title
+            schema:
+              type: primitive
+              primitive:
+                value: string
