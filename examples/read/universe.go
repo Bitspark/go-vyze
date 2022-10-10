@@ -7,16 +7,16 @@ import (
 // Universe interfaces
 
 type Document struct {
-	ID      go_vyze.ID `json:"id"`
-	Name    string     `json:"name"`
-	Content string     `json:"content"`
+	ID      vyze.ID `json:"id"`
+	Name    string  `json:"name"`
+	Content string  `json:"content"`
 }
 
 // Universe endpoints
 
 // Example is a client for the universe example providing its endpoints as methods
-type Example struct{ Client go_vyze.Client }
+type Example struct{ Client vyze.Client }
 
-func (u *Example) getDocument(id go_vyze.ID) (Document, error) {
-	return go_vyze.GetNode[Document](u.Client, "getDocument", id)
+func (u *Example) getDocument(id vyze.ID) (Document, error) {
+	return vyze.GetNode[Document](u.Client, "getDocument", id)
 }

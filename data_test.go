@@ -1,8 +1,9 @@
-package go_vyze
+package vyze
 
 import (
 	"crypto/rand"
 	"encoding/json"
+	"gopkg.in/yaml.v3"
 	"strings"
 	"testing"
 	"time"

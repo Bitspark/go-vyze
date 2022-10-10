@@ -7,6 +7,7 @@ require (
 	github.com/iancoleman/strcase v0.2.0
 	github.com/jxskiss/base62 v1.1.0
 	github.com/xeipuuv/gojsonschema v1.2.0
+	gopkg.in/yaml.v3 v3.0.1
 )
 
 require (

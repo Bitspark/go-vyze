@@ -1,4 +1,4 @@
-package go_vyze
+package vyze
 
 import (
 	"bytes"
@@ -7,6 +7,7 @@ import (
 	"encoding/hex"
 	"encoding/json"
 	"errors"
+	"gopkg.in/yaml.v3"
 	"hash/maphash"
 	"math"
 	"time"

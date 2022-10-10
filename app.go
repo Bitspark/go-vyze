@@ -1,4 +1,4 @@
-package go_vyze
+package vyze
 
 type ComponentType string
 

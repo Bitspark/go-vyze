@@ -1,7 +1,8 @@
-package go_vyze
+package vyze
 
 import (
 	"encoding/json"
+	"gopkg.in/yaml.v3"
 	"strings"
 	"testing"
 )

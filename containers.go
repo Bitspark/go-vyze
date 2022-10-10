@@ -1,4 +1,4 @@
-package go_vyze
+package vyze
 
 import (
 	"bytes"
@@ -9,6 +9,7 @@ import (
 	"encoding/json"
 	"errors"
 	"github.com/jxskiss/base62"
+	"gopkg.in/yaml.v3"
 	"sort"
 	"strings"
 )
