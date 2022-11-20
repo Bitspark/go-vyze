@@ -57,6 +57,21 @@ func (sc *ServiceClient) Info() (ServiceInfo, error) {
 	return info, nil
 }
 
+type LoginRequest struct {
+	Username string `json:"username"`
+	Password string `json:"password"`
+}
+
+type UserInfo struct {
+	ID   ID     `json:"id"`
+	Name string `json:"name"`
+}
+
+type LoginResponse struct {
+	User  UserInfo `json:"user"`
+	Token string   `json:"token"`
+}
+
 func (sc *ServiceClient) ResolveUniverse(name string) (ID, error) {
 	u := sc.buildURL(fmt.Sprintf("resolve/universe"), map[string][]string{"i": {name}})
 	universeIDBytes, err := sc.request(u, "GET", nil)
@@ -313,6 +328,7 @@ type UpdateComponentRequest struct {
 	Public      *bool   `json:"public,omitempty"`
 	Listed      *bool   `json:"listed,omitempty"`
 	Profile     *ID     `json:"profile,omitempty"`
+	Title       *string `json:"title,omitempty"`
 }
 
 func (sc *ServiceClient) UpdateComponent(id ID, name *string, description *string, public *bool, listed *bool) (Component, error) {
@@ -397,6 +413,25 @@ func (sc *ServiceClient) UpdateFlexView(componentID ID, definition *string) (Fle
 		return FlexViewComponent{}, err
 	}
 	return resp, nil
+}
+
+type CreateAppRequest struct {
+	Name     string `json:"name"`
+	Universe ID     `json:"universe"`
+	Public   bool   `json:"public"`
+}
+
+type UpdateAppRequest struct {
+	Name        *string `json:"name,omitempty"`
+	Public      *bool   `json:"public,omitempty"`
+	Description *string `json:"description,omitempty"`
+	Path        *string `json:"path,omitempty"`
+	Title       *string `json:"title,omitempty"`
+}
+
+type CreateRouteRequest struct {
+	Route string `json:"route"`
+	View  ID     `json:"view"`
 }
 
 func (sc *ServiceClient) buildURL(endpoint string, params url.Values) string {

@@ -94,6 +94,9 @@ type LayerTokenInfo struct {
 
 	// Expiry contains the duration of validity
 	Expiry int64 `json:"expiry"`
+
+	// Admin indicates whether this user is an admin
+	Admin bool `json:"admin"`
 }
 
 type Object struct {

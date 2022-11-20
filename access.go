@@ -28,6 +28,7 @@ type LayerToken struct {
 	Granted   uint32        `json:"granted"`
 	Mandatory uint32        `json:"mandatory"`
 	Exclusive uint32        `json:"exclusive"`
+	IsAdmin   bool          `json:"admin"`
 	Signature Binary        `json:"signature"`
 	Token     string        `json:"token"`
 }
@@ -51,7 +52,7 @@ func (lt LayerToken) Expired() bool {
 // ReadLayerToken parses a token string and returns a new LayerToken instance.
 func ReadLayerToken(tokenString string) (LayerToken, error) {
 	const permLen = 4
-	const msgLen = 16 + 16 + 3*permLen + 4 + 8
+	const msgLen = 16 + 16 + 3*permLen + 4 + 8 + 1
 
 	var msgBytes []byte
 	var err error
@@ -101,6 +102,9 @@ succ:
 	if s.Expired() {
 		return LayerToken{}, errors.New("expired:" + s.LayerID.String())
 	}
+
+	s.IsAdmin = msgBytes[i] == 0xFF
+	i += 1
 
 	s.Signature = msgBytes[msgLen+seedLength:]
 
