@@ -1,0 +1,1 @@
+type string1: string

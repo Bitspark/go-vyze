@@ -1,0 +1,24 @@
+types:
+  prog:
+    mapOf:
+      a1: string
+      b1: string
+
+  progBound:
+    mapOf:
+      a2: string
+      b2: string
+
+actions:
+  prog:
+    sequence:
+      - bound:
+          binding:
+            - 'a1 -> a2'
+            - 'b1 <- b2'
+          update: $prog_bound
+
+  prog_bound:
+    type: '$progBound'
+    condition: 'a2 == 1'
+    update: 'b2 = 2'

@@ -1,0 +1,8 @@
+types:
+  assistant:
+    mapOf:
+      name: string
+conditions:
+  cond1: 'a == b'
+actions:
+  ud1: 'a = 1'

@@ -3,21 +3,24 @@ package vyze
 import (
 	"encoding/json"
 	"fmt"
+	"github.com/Bitspark/go-vyze/core"
+	"github.com/Bitspark/go-vyze/service"
+	"github.com/Bitspark/go-vyze/system"
 	"strings"
 )
 
 type Client struct {
-	Service          *ServiceClient
-	System           *SystemClient
-	Universes        map[string]*Universe
+	Service          *service.ServiceClient
+	System           *system.SystemClient
+	Universes        map[string]*system.Universe
 	SelectedUniverse string
 }
 
-func NewClient(serviceClient *ServiceClient, systemClient *SystemClient) Client {
+func NewClient(serviceClient *service.ServiceClient, systemClient *system.SystemClient) Client {
 	return Client{
 		Service:   serviceClient,
 		System:    systemClient,
-		Universes: map[string]*Universe{},
+		Universes: map[string]*system.Universe{},
 	}
 }
 
@@ -35,21 +38,21 @@ func (v *Client) LoadUniverse(name string) error {
 	return nil
 }
 
-func (v Client) Universe() *Universe {
+func (v *Client) Universe() *system.Universe {
 	return v.Universes[v.SelectedUniverse]
 }
 
 // Objects
 
 type Q[N any] struct {
-	epType    EndpointType
+	epType    system.EndpointType
 	client    Client
-	universe  *Universe
-	modelID   ID
-	modelNode Node
-	objectID  ID
-	orders    []Order
-	filters   []Filter
+	universe  *system.Universe
+	modelID   core.ID
+	modelNode system.Node
+	objectID  core.ID
+	orders    []system.Order
+	filters   []system.Filter
 	limit     *int
 	offset    *int
 	err       error
@@ -70,13 +73,13 @@ func Query[N any](c Client, ep string) Q[N] {
 		modelNode: ndEp.Node,
 	}
 	q = q.Model(ndEp.Context.Environment.Model)
-	if id, ok := ndEp.Context.Value.(ID); ok {
+	if id, ok := ndEp.Context.Value.(core.ID); ok {
 		q.modelID = id
 	}
 	return q
 }
 
-func (q Q[N]) Object(id ID) Q[N] {
+func (q Q[N]) Object(id core.ID) Q[N] {
 	if q.err != nil {
 		return q
 	}
@@ -97,8 +100,8 @@ func (q Q[N]) Model(model string) Q[N] {
 	return q
 }
 
-func (q Q[N]) Filter(path string, operator OperatorType, value any) Q[N] {
-	if q.epType != EndpointTypeGet {
+func (q Q[N]) Filter(path string, operator system.OperatorType, value any) Q[N] {
+	if q.epType != system.EndpointTypeGet {
 		q.err = fmt.Errorf("wrong endpoint type: %s (filter requires get)", q.epType)
 		return q
 	}
@@ -110,7 +113,7 @@ func (q Q[N]) Filter(path string, operator OperatorType, value any) Q[N] {
 	if q.err != nil {
 		return q
 	}
-	q.filters = append(q.filters, Filter{
+	q.filters = append(q.filters, system.Filter{
 		Source:   *pathSource,
 		Operator: operator,
 		Value:    value,
@@ -119,11 +122,11 @@ func (q Q[N]) Filter(path string, operator OperatorType, value any) Q[N] {
 }
 
 func (q Q[N]) Equals(path string, value any) Q[N] {
-	return q.Filter(path, OperatorTypeEqual, value)
+	return q.Filter(path, system.OperatorTypeEqual, value)
 }
 
 func (q Q[N]) Sort(path string, asc bool) Q[N] {
-	if q.epType != EndpointTypeGet {
+	if q.epType != system.EndpointTypeGet {
 		q.err = fmt.Errorf("wrong endpoint type: %s (sort requires get)", q.epType)
 		return q
 	}
@@ -135,7 +138,7 @@ func (q Q[N]) Sort(path string, asc bool) Q[N] {
 	if q.err != nil {
 		return q
 	}
-	q.orders = append(q.orders, Order{
+	q.orders = append(q.orders, system.Order{
 		Source:     *pathSource,
 		Descending: !asc,
 	})
@@ -143,7 +146,7 @@ func (q Q[N]) Sort(path string, asc bool) Q[N] {
 }
 
 func (q Q[N]) Limit(limit int) Q[N] {
-	if q.epType != EndpointTypeGet {
+	if q.epType != system.EndpointTypeGet {
 		q.err = fmt.Errorf("wrong endpoint type: %s (limit requires get)", q.epType)
 		return q
 	}
@@ -152,7 +155,7 @@ func (q Q[N]) Limit(limit int) Q[N] {
 }
 
 func (q Q[N]) Offset(offset int) Q[N] {
-	if q.epType != EndpointTypeGet {
+	if q.epType != system.EndpointTypeGet {
 		q.err = fmt.Errorf("wrong endpoint type: %s (offset requires get)", q.epType)
 		return q
 	}
@@ -168,7 +171,7 @@ func (q Q[N]) GetObject() (*N, error) {
 	if q.err != nil {
 		return nil, q.err
 	}
-	if q.epType != EndpointTypeGet {
+	if q.epType != system.EndpointTypeGet {
 		return nil, fmt.Errorf("wrong endpoint type: %s (expected get)", q.epType)
 	}
 	nd, err := q.objectNode().Resolve(*q.universe)
@@ -194,7 +197,7 @@ func (q Q[N]) GetObjects() ([]N, error) {
 	if q.err != nil {
 		return nil, q.err
 	}
-	if q.epType != EndpointTypeGet {
+	if q.epType != system.EndpointTypeGet {
 		return nil, fmt.Errorf("wrong endpoint type: %s (expected get)", q.epType)
 	}
 	nd, err := q.listNode().Resolve(*q.universe)
@@ -220,7 +223,7 @@ func (q Q[N]) PutObject(obj *N) (*N, error) {
 	if q.err != nil {
 		return nil, q.err
 	}
-	if q.epType != EndpointTypePut {
+	if q.epType != system.EndpointTypePut {
 		return nil, fmt.Errorf("wrong endpoint type: %s (expected put)", q.epType)
 	}
 	nd, err := q.objectNode().Resolve(*q.universe)
@@ -246,7 +249,7 @@ func (q Q[N]) PutObjects(objs []N) ([]N, error) {
 	if q.err != nil {
 		return nil, q.err
 	}
-	if q.epType != EndpointTypePut {
+	if q.epType != system.EndpointTypePut {
 		return nil, fmt.Errorf("wrong endpoint type: %s (expected put)", q.epType)
 	}
 	nd, err := q.listNode().Resolve(*q.universe)
@@ -268,18 +271,18 @@ func (q Q[N]) PutObjects(objs []N) ([]N, error) {
 	return respObjs, nil
 }
 
-func (q Q[N]) pathSource(path string) (*ValueSource, error) {
+func (q Q[N]) pathSource(path string) (*system.ValueSource, error) {
 	pathNode := q.modelNode
-	var sourceNode *Node
-	var format FormatType
-	curNode := &Node{}
+	var sourceNode *system.Node
+	var format system.FormatType
+	curNode := &system.Node{}
 	paths := strings.Split(path, ".")
 
 	if len(paths) > 0 && paths[0] != "" {
 		paths = append(paths, "")
 	}
 
-	descendPath := func(nd Node, ndPtr *Node) {
+	descendPath := func(nd system.Node, ndPtr *system.Node) {
 		if sourceNode == nil {
 			sourceNode = &nd
 			curNode = ndPtr
@@ -292,7 +295,7 @@ func (q Q[N]) pathSource(path string) (*ValueSource, error) {
 	for _, p := range paths {
 		if p != "" {
 			// Map
-			if pathNode.Type == NodeTypeMap {
+			if pathNode.Type == system.NodeTypeMap {
 				for _, e := range pathNode.Map.Entries {
 					if e.Name == p {
 						pathNode = e.Node
@@ -305,10 +308,10 @@ func (q Q[N]) pathSource(path string) (*ValueSource, error) {
 
 		for {
 			// Value
-			if pathNode.Type == NodeTypeValue {
-				nd := Node{
-					Type: NodeTypeValue,
-					Value: &ValueNode{
+			if pathNode.Type == system.NodeTypeValue {
+				nd := system.Node{
+					Type: system.NodeTypeValue,
+					Value: &system.ValueNode{
 						Field:  pathNode.Value.Field,
 						Format: pathNode.Value.Format,
 					},
@@ -319,10 +322,10 @@ func (q Q[N]) pathSource(path string) (*ValueSource, error) {
 			}
 
 			// Aggregate
-			if pathNode.Type == NodeTypeAggregate {
-				nd := Node{
-					Type: NodeTypeAggregate,
-					Aggregate: &AggregateNode{
+			if pathNode.Type == system.NodeTypeAggregate {
+				nd := system.Node{
+					Type: system.NodeTypeAggregate,
+					Aggregate: &system.AggregateNode{
 						Source:   pathNode.Aggregate.Source,
 						Function: pathNode.Aggregate.Function,
 					},
@@ -333,10 +336,10 @@ func (q Q[N]) pathSource(path string) (*ValueSource, error) {
 			}
 
 			// Instance
-			if pathNode.Type == NodeTypeInstance {
-				nd := Node{
-					Type: NodeTypeInstance,
-					Instance: &InstanceNode{
+			if pathNode.Type == system.NodeTypeInstance {
+				nd := system.Node{
+					Type: system.NodeTypeInstance,
+					Instance: &system.InstanceNode{
 						Format:   pathNode.Instance.Format,
 						Switches: pathNode.Instance.Switches,
 					},
@@ -347,10 +350,10 @@ func (q Q[N]) pathSource(path string) (*ValueSource, error) {
 			}
 
 			// Relation
-			if pathNode.Type == NodeTypeRelation {
-				nd := Node{
-					Type: NodeTypeRelation,
-					Relation: &RelationNode{
+			if pathNode.Type == system.NodeTypeRelation {
+				nd := system.Node{
+					Type: system.NodeTypeRelation,
+					Relation: &system.RelationNode{
 						Type:     pathNode.Relation.Type,
 						Relation: pathNode.Relation.Relation,
 						Reverse:  pathNode.Relation.Reverse,
@@ -362,10 +365,10 @@ func (q Q[N]) pathSource(path string) (*ValueSource, error) {
 			}
 
 			// Specials
-			if pathNode.Type == NodeTypeSpecials {
-				nd := Node{
-					Type: NodeTypeSpecials,
-					Specials: &SpecialsNode{
+			if pathNode.Type == system.NodeTypeSpecials {
+				nd := system.Node{
+					Type: system.NodeTypeSpecials,
+					Specials: &system.SpecialsNode{
 						Type:     "",
 						Direct:   false,
 						Indirect: false,
@@ -382,19 +385,19 @@ func (q Q[N]) pathSource(path string) (*ValueSource, error) {
 	descendMap:
 	}
 
-	return &ValueSource{
-		Type:   SourceTypeNode,
+	return &system.ValueSource{
+		Type:   system.SourceTypeNode,
 		Format: format,
 		Node:   sourceNode,
 	}, nil
 }
 
-func (q Q[N]) objectNode() Node {
+func (q Q[N]) objectNode() system.Node {
 	// Embed into context
-	node := Node{
-		Type: NodeTypeContext,
-		Context: &ContextNode{
-			Context: Context{
+	node := system.Node{
+		Type: system.NodeTypeContext,
+		Context: &system.ContextNode{
+			Context: system.Context{
 				Value: q.objectID,
 			},
 			Node: q.modelNode,
@@ -404,22 +407,22 @@ func (q Q[N]) objectNode() Node {
 	return node
 }
 
-func (q Q[N]) listNode() Node {
+func (q Q[N]) listNode() system.Node {
 	// The following node nesting will be executed in reverse order
 
 	// Prepare list node (last piece)
-	node := Node{
-		Type: NodeTypeList,
-		List: &ListNode{
+	node := system.Node{
+		Type: system.NodeTypeList,
+		List: &system.ListNode{
 			Entry: q.modelNode,
 		},
 	}
 
 	// Slicing
 	if q.limit != nil || q.offset != nil {
-		node = Node{
-			Type: NodeTypeSlice,
-			Slice: &SliceNode{
+		node = system.Node{
+			Type: system.NodeTypeSlice,
+			Slice: &system.SliceNode{
 				Offset: q.offset,
 				Limit:  q.limit,
 				Node:   node,
@@ -429,9 +432,9 @@ func (q Q[N]) listNode() Node {
 
 	// Ordering
 	for _, o := range q.orders {
-		node = Node{
-			Type: NodeTypeSort,
-			Sort: &SortNode{
+		node = system.Node{
+			Type: system.NodeTypeSort,
+			Sort: &system.SortNode{
 				Order: o,
 				Node:  node,
 			},
@@ -440,9 +443,9 @@ func (q Q[N]) listNode() Node {
 
 	// Filtering
 	for _, f := range q.filters {
-		node = Node{
-			Type: NodeTypeFilter,
-			Filter: &FilterNode{
+		node = system.Node{
+			Type: system.NodeTypeFilter,
+			Filter: &system.FilterNode{
 				Filter: f,
 				Node:   node,
 			},
@@ -450,16 +453,16 @@ func (q Q[N]) listNode() Node {
 	}
 
 	// Embed into context and specials node (first piece)
-	node = Node{
-		Type: NodeTypeContext,
-		Context: &ContextNode{
-			Context: Context{
+	node = system.Node{
+		Type: system.NodeTypeContext,
+		Context: &system.ContextNode{
+			Context: system.Context{
 				Value: q.modelID,
 			},
-			Node: Node{
-				Type: NodeTypeSpecials,
-				Specials: &SpecialsNode{
-					Type:     EnvironmentTypeList,
+			Node: system.Node{
+				Type: system.NodeTypeSpecials,
+				Specials: &system.SpecialsNode{
+					Type:     system.EnvironmentTypeList,
 					Direct:   true,
 					Indirect: true,
 					Node:     node,

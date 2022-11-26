@@ -1,0 +1,8 @@
+types:
+  prog:
+    mapOf:
+      a: string
+      b: boolean
+
+actions:
+  prog: b
