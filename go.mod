@@ -17,6 +17,8 @@ require (
 	golang.org/x/exp v0.0.0-20220722155223-a9213eeb770e // indirect
 )
 
+replace github.com/Bitspark/go-vyze/vyze => ./vyze
+
 replace github.com/Bitspark/go-vyze/core => ./core
 
 replace github.com/Bitspark/go-vyze/lang => ./lang
