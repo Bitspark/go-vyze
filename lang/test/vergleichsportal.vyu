@@ -1,0 +1,913 @@
+id: c12e17d0ea063a110615cd6732bc99ce
+name: vergleichsportal
+description: Universe vergleichsportal created on November 18, 2022.
+bases:
+    - base
+    - data
+dependencies:
+    - base
+objects:
+    - base.object
+    - base.object#relation
+    - base.object#relation/
+    - base.object#relation/data
+    - base.object/
+    - base.object/data
+    - crawljob
+    - crawljob#distributor
+    - crawljob#item
+    - crawljob#running
+    - crawljob@running
+    - data.@boolean
+    - data.@boolean/
+    - data.@data
+    - data.@data/
+    - data.@float
+    - data.@float/
+    - data.@integer
+    - data.@integer/
+    - data.@string
+    - data.@string/
+    - distributor
+    - distributor#url
+    - distributor@url
+    - distributorprice
+    - distributorprice#distributor
+    - distributorprice#item
+    - distributorprice#last_check
+    - distributorprice#price
+    - distributorprice@last_check
+    - distributorprice@price
+    - item
+    - item#item_id
+    - item@item_id
+info:
+    - mapping: base.object
+      type: model
+      object: 034cede45f762ef783ed7e854fcb0527
+      description: Model object automatically created from system module base.
+    - mapping: base.object#relation
+      type: field
+      object: 0ba31258af41284890f1e8c608b72904
+      description: Field object#relation automatically created from system module base.
+    - mapping: base.object#relation/
+      type: field
+      object: b4a3af2587016d8d8ff2c8749031d4ea
+      description: Field object#relation automatically created from system module base.
+    - mapping: base.object#relation/data
+      type: field
+      object: 29df49477a4262567c5932618e66d5a8
+      description: Field object#relation automatically created from system module base.
+    - mapping: base.object/
+      type: model
+      object: 3f1a25141cd116cd4692aa7a325cfb9e
+      description: Model object automatically created from system module base.
+    - mapping: base.object/data
+      type: model
+      object: f5581fc867b412016e711404ff9cbf58
+      description: Model object automatically created from system module base.
+    - mapping: crawljob
+      type: model
+      object: d1ab4eb88c930b7e61fe6281ef76ad45
+    - mapping: crawljob#distributor
+      type: field
+      object: aff30422ab73276257162865165d6da2
+    - mapping: crawljob#item
+      type: field
+      object: fbedf37ce100ceaa47d2750385cd0a89
+    - mapping: crawljob#running
+      type: field
+      object: bd96a3f5c07b019764131fa696f52c2b
+    - mapping: crawljob@running
+      type: value
+      object: 5f10fa552e788388db80d5692e139301
+    - mapping: data.@boolean
+      type: value
+      object: 40032916c1beb56a6eeaf5294e6d178d
+      description: Value type @boolean automatically created from system module data.
+    - mapping: data.@boolean/
+      type: value
+      object: a04875e04c5a6929513d4a11d34b04a4
+      description: Value type @boolean automatically created from system module data.
+    - mapping: data.@data
+      type: value
+      object: 68a524f5a0f26bf48d1bec6a0eee4843
+      description: Value type @data automatically created from system module data.
+    - mapping: data.@data/
+      type: value
+      object: 64a3f5d4c1475bcae1d605914ee438d4
+      description: Value type @data automatically created from system module data.
+    - mapping: data.@float
+      type: value
+      object: aca726d66f3cbe7413712a1fd3699d3c
+      description: Value type @float automatically created from system module data.
+    - mapping: data.@float/
+      type: value
+      object: 92d54241a306cead14f69f1ce3f02c2a
+      description: Value type @float automatically created from system module data.
+    - mapping: data.@integer
+      type: value
+      object: 8f77fa8b7a57ee0749ce0dd5b477b825
+      description: Value type @integer automatically created from system module data.
+    - mapping: data.@integer/
+      type: value
+      object: d0522a38ec4a5d38005abdbccaa4b52d
+      description: Value type @integer automatically created from system module data.
+    - mapping: data.@string
+      type: value
+      object: f5e32be6f09f8c0b8dd851f656c02ffe
+      description: Value type @string automatically created from system module data.
+    - mapping: data.@string/
+      type: value
+      object: b0692b812ab629d4401bc89897579697
+      description: Value type @string automatically created from system module data.
+    - mapping: distributor
+      type: model
+      object: b6d9b5482dd04343599f9c671d537fa9
+    - mapping: distributor#url
+      type: field
+      object: aa9a09ff7d4272af2872d4741d920a34
+    - mapping: distributor@url
+      type: value
+      object: 86441e3a3b4a97e1bdf54ed80ab393d5
+    - mapping: distributorprice
+      type: model
+      object: a8bc75d634d861381d3da0bacbfd7785
+    - mapping: distributorprice#distributor
+      type: field
+      object: 54214d810db5e94e3433da78b9610431
+    - mapping: distributorprice#item
+      type: field
+      object: 55d8f6c8873b87d9a69ce99ca1a7b9c5
+    - mapping: distributorprice#last_check
+      type: field
+      object: 8afd4c152598ac662374e29aedcd2c56
+    - mapping: distributorprice#price
+      type: field
+      object: 841137e982070eb34c83194a5864813a
+    - mapping: distributorprice@last_check
+      type: value
+      object: 6e7b42dd7c4a2a5d4abb6afba95f9d20
+    - mapping: distributorprice@price
+      type: value
+      object: 904126d341bf7601427da9438ce74f62
+    - mapping: item
+      type: model
+      object: 1195b4a1e3b4a9c9b93b0b3725702049
+    - mapping: item#item_id
+      type: field
+      object: 1578d793c9c5e6611d7229b14352977a
+    - mapping: item@item_id
+      type: value
+      object: 3c64ec3c0915edc175439391b3c1cada
+relations:
+    - base.object#relation:base.object:base.object
+    - base.object#relation/:base.object/:base.object
+    - base.object#relation/data:base.object/data:base.object
+    - crawljob#distributor:crawljob:distributor
+    - crawljob#item:crawljob:item
+    - crawljob#running:crawljob:crawljob@running
+    - distributor#url:distributor:distributor@url
+    - distributorprice#distributor:distributorprice:distributor
+    - distributorprice#item:distributorprice:item
+    - distributorprice#last_check:distributorprice:distributorprice@last_check
+    - distributorprice#price:distributorprice:distributorprice@price
+    - item#item_id:item:item@item_id
+abstractions:
+    - base.object:base.object#relation
+    - base.object:base.object/data
+    - base.object#relation:base.object#relation/data
+    - base.object#relation/:crawljob#distributor
+    - base.object#relation/:crawljob#item
+    - base.object#relation/:crawljob#running
+    - base.object#relation/:distributor#url
+    - base.object#relation/:distributorprice#distributor
+    - base.object#relation/:distributorprice#item
+    - base.object#relation/:distributorprice#last_check
+    - base.object#relation/:distributorprice#price
+    - base.object#relation/:item#item_id
+    - base.object#relation/data:base.object#relation/
+    - base.object/:base.object#relation/
+    - base.object/:crawljob
+    - base.object/:data.@data/
+    - base.object/:distributor
+    - base.object/:distributorprice
+    - base.object/:item
+    - base.object/data:base.object#relation/data
+    - base.object/data:base.object/
+    - base.object/data:data.@data
+    - data.@boolean:data.@boolean/
+    - data.@boolean/:crawljob@running
+    - data.@data:data.@boolean
+    - data.@data:data.@data/
+    - data.@data:data.@float
+    - data.@data:data.@integer
+    - data.@data:data.@string
+    - data.@data/:data.@boolean/
+    - data.@data/:data.@float/
+    - data.@data/:data.@integer/
+    - data.@data/:data.@string/
+    - data.@float:data.@float/
+    - data.@float/:distributorprice@price
+    - data.@integer:data.@integer/
+    - data.@integer/:distributorprice@last_check
+    - data.@string:data.@string/
+    - data.@string/:distributor@url
+    - data.@string/:item@item_id
+endpoints:
+    - type: get
+      id: d9894d3fe21fee217af9cc96054f6914
+      name: getCrawljob
+      node:
+        type: map
+        map:
+            entries:
+                - name: id
+                  node:
+                    type: value
+                    value:
+                        field: id
+                        format: hex
+                - name: name
+                  node:
+                    type: value
+                    value:
+                        field: name
+                        format: string
+                - name: distributor
+                  node:
+                    type: relation
+                    relation:
+                        type: primitive
+                        relation: crawljob#distributor
+                        reverse: false
+                        node:
+                            type: map
+                            map:
+                                entries:
+                                    - name: id
+                                      node:
+                                        type: value
+                                        value:
+                                            field: id
+                                            format: hex
+                                    - name: name
+                                      node:
+                                        type: value
+                                        value:
+                                            field: name
+                                            format: string
+                                    - name: url
+                                      node:
+                                        type: relation
+                                        relation:
+                                            type: primitive
+                                            relation: distributor#url
+                                            reverse: false
+                                            node:
+                                                type: value
+                                                value:
+                                                    field: data
+                                                    format: string
+                                            putAdd: false
+                                            putDuplicates: false
+                        putAdd: false
+                        putDuplicates: false
+                - name: item
+                  node:
+                    type: relation
+                    relation:
+                        type: primitive
+                        relation: crawljob#item
+                        reverse: false
+                        node:
+                            type: map
+                            map:
+                                entries:
+                                    - name: id
+                                      node:
+                                        type: value
+                                        value:
+                                            field: id
+                                            format: hex
+                                    - name: name
+                                      node:
+                                        type: value
+                                        value:
+                                            field: name
+                                            format: string
+                                    - name: itemId
+                                      node:
+                                        type: relation
+                                        relation:
+                                            type: primitive
+                                            relation: item#item_id
+                                            reverse: false
+                                            node:
+                                                type: value
+                                                value:
+                                                    field: data
+                                                    format: string
+                                            putAdd: false
+                                            putDuplicates: false
+                        putAdd: false
+                        putDuplicates: false
+                - name: running
+                  node:
+                    type: relation
+                    relation:
+                        type: primitive
+                        relation: crawljob#running
+                        reverse: false
+                        node:
+                            type: value
+                            value:
+                                field: data
+                                format: boolean
+                        putAdd: false
+                        putDuplicates: false
+      context:
+        environment:
+            type: primitive
+            model: crawljob
+        value: null
+    - type: get
+      id: a9e5e06a8182141e45bfc19b156547fc
+      name: getDistributor
+      node:
+        type: map
+        map:
+            entries:
+                - name: id
+                  node:
+                    type: value
+                    value:
+                        field: id
+                        format: hex
+                - name: name
+                  node:
+                    type: value
+                    value:
+                        field: name
+                        format: string
+                - name: url
+                  node:
+                    type: relation
+                    relation:
+                        type: primitive
+                        relation: distributor#url
+                        reverse: false
+                        node:
+                            type: value
+                            value:
+                                field: data
+                                format: string
+                        putAdd: false
+                        putDuplicates: false
+      context:
+        environment:
+            type: primitive
+            model: distributor
+        value: null
+    - type: get
+      id: 5f4d2e9e8549155ee886e802f1d8866e
+      name: getDistributorprice
+      node:
+        type: map
+        map:
+            entries:
+                - name: id
+                  node:
+                    type: value
+                    value:
+                        field: id
+                        format: hex
+                - name: lastCheck
+                  node:
+                    type: relation
+                    relation:
+                        type: primitive
+                        relation: distributorprice#last_check
+                        reverse: false
+                        node:
+                            type: value
+                            value:
+                                field: data
+                                format: integer
+                        putAdd: false
+                        putDuplicates: false
+                - name: price
+                  node:
+                    type: relation
+                    relation:
+                        type: primitive
+                        relation: distributorprice#price
+                        reverse: false
+                        node:
+                            type: value
+                            value:
+                                field: data
+                                format: float
+                        putAdd: false
+                        putDuplicates: false
+                - name: distributor
+                  node:
+                    type: map
+                    map:
+                        entries:
+                            - name: id
+                              node:
+                                type: relation
+                                relation:
+                                    type: primitive
+                                    relation: distributorprice#distributor
+                                    reverse: false
+                                    node:
+                                        type: value
+                                        value:
+                                            field: id
+                                            format: hex
+                                    putAdd: false
+                                    putDuplicates: false
+                            - name: name
+                              node:
+                                type: relation
+                                relation:
+                                    type: primitive
+                                    relation: distributorprice#distributor
+                                    reverse: false
+                                    node:
+                                        type: value
+                                        value:
+                                            field: name
+                                            format: string
+                                    putAdd: false
+                                    putDuplicates: false
+                - name: item
+                  node:
+                    type: map
+                    map:
+                        entries:
+                            - name: id
+                              node:
+                                type: relation
+                                relation:
+                                    type: primitive
+                                    relation: distributorprice#item
+                                    reverse: false
+                                    node:
+                                        type: value
+                                        value:
+                                            field: id
+                                            format: hex
+                                    putAdd: false
+                                    putDuplicates: false
+                            - name: name
+                              node:
+                                type: relation
+                                relation:
+                                    type: primitive
+                                    relation: distributorprice#item
+                                    reverse: false
+                                    node:
+                                        type: value
+                                        value:
+                                            field: name
+                                            format: string
+                                    putAdd: false
+                                    putDuplicates: false
+      context:
+        environment:
+            type: primitive
+            model: distributorprice
+        value: null
+    - type: get
+      id: 93047e8fe344ef6deb6fefa97b686094
+      name: getItem
+      node:
+        type: map
+        map:
+            entries:
+                - name: id
+                  node:
+                    type: value
+                    value:
+                        field: id
+                        format: hex
+                - name: name
+                  node:
+                    type: value
+                    value:
+                        field: name
+                        format: string
+                - name: itemId
+                  node:
+                    type: relation
+                    relation:
+                        type: primitive
+                        relation: item#item_id
+                        reverse: false
+                        node:
+                            type: value
+                            value:
+                                field: data
+                                format: string
+                        putAdd: false
+                        putDuplicates: false
+                - name: distributorPrices
+                  node:
+                    type: relation
+                    relation:
+                        type: list
+                        relation: distributorprice#item
+                        reverse: true
+                        node:
+                            type: list
+                            list:
+                                entry:
+                                    type: map
+                                    map:
+                                        entries:
+                                            - name: price
+                                              node:
+                                                type: relation
+                                                relation:
+                                                    type: primitive
+                                                    relation: distributorprice#price
+                                                    reverse: false
+                                                    node:
+                                                        type: value
+                                                        value:
+                                                            field: data
+                                                            format: float
+                                                    putAdd: false
+                                                    putDuplicates: false
+                                            - name: distributor
+                                              node:
+                                                type: relation
+                                                relation:
+                                                    type: primitive
+                                                    relation: distributorprice#distributor
+                                                    reverse: false
+                                                    node:
+                                                        type: map
+                                                        map:
+                                                            entries:
+                                                                - name: id
+                                                                  node:
+                                                                    type: value
+                                                                    value:
+                                                                        field: id
+                                                                        format: hex
+                                                                - name: name
+                                                                  node:
+                                                                    type: value
+                                                                    value:
+                                                                        field: name
+                                                                        format: string
+                                                                - name: url
+                                                                  node:
+                                                                    type: relation
+                                                                    relation:
+                                                                        type: primitive
+                                                                        relation: distributor#url
+                                                                        reverse: false
+                                                                        node:
+                                                                            type: value
+                                                                            value:
+                                                                                field: data
+                                                                                format: string
+                                                                        putAdd: false
+                                                                        putDuplicates: false
+                                                    putAdd: false
+                                                    putDuplicates: false
+                        putAdd: false
+                        putDuplicates: false
+      context:
+        environment:
+            type: primitive
+            model: item
+        value: null
+      interface:
+        type: reference
+        reference:
+            name: Item
+    - type: put
+      id: 09c830adbf10308a3c7fbd4f4141a805
+      name: putCrawljob
+      node:
+        type: map
+        map:
+            entries:
+                - name: id
+                  node:
+                    type: value
+                    value:
+                        field: id
+                        format: hex
+                - name: name
+                  node:
+                    type: value
+                    value:
+                        field: name
+                        format: string
+                - name: distributor
+                  node:
+                    type: relation
+                    relation:
+                        type: primitive
+                        relation: crawljob#distributor
+                        reverse: false
+                        node:
+                            type: value
+                            value:
+                                field: id
+                                format: hex
+                        putAdd: false
+                        putDuplicates: false
+                - name: item
+                  node:
+                    type: relation
+                    relation:
+                        type: primitive
+                        relation: crawljob#item
+                        reverse: false
+                        node:
+                            type: value
+                            value:
+                                field: id
+                                format: hex
+                        putAdd: false
+                        putDuplicates: false
+                - name: running
+                  node:
+                    type: relation
+                    relation:
+                        type: primitive
+                        relation: crawljob#running
+                        reverse: false
+                        node:
+                            type: value
+                            value:
+                                field: data
+                                format: boolean
+                        putAdd: false
+                        putDuplicates: false
+      context:
+        environment:
+            type: primitive
+            model: crawljob
+        value: null
+    - type: put
+      id: 46938b8f05b7a585e72fcbfed234982d
+      name: putCrawljobRunning
+      node:
+        type: map
+        map:
+            entries:
+                - name: id
+                  node:
+                    type: value
+                    value:
+                        field: id
+                        format: hex
+                - name: running
+                  node:
+                    type: relation
+                    relation:
+                        type: primitive
+                        relation: crawljob#running
+                        reverse: false
+                        node:
+                            type: value
+                            value:
+                                field: data
+                                format: boolean
+                        putAdd: false
+                        putDuplicates: false
+      context:
+        environment:
+            type: primitive
+            model: crawljob
+        value: null
+    - type: put
+      id: 14fb848c5ba9626786a551571e58a27a
+      name: putDistributorprice
+      node:
+        type: map
+        map:
+            entries:
+                - name: id
+                  node:
+                    type: value
+                    value:
+                        field: id
+                        format: hex
+                - name: name
+                  node:
+                    type: value
+                    value:
+                        field: name
+                        format: string
+                - name: distributor
+                  node:
+                    type: relation
+                    relation:
+                        type: primitive
+                        relation: distributorprice#distributor
+                        reverse: false
+                        node:
+                            type: value
+                            value:
+                                field: id
+                                format: hex
+                        putAdd: false
+                        putDuplicates: false
+                - name: item
+                  node:
+                    type: relation
+                    relation:
+                        type: primitive
+                        relation: distributorprice#item
+                        reverse: false
+                        node:
+                            type: value
+                            value:
+                                field: id
+                                format: hex
+                        putAdd: false
+                        putDuplicates: false
+                - name: lastCheck
+                  node:
+                    type: relation
+                    relation:
+                        type: primitive
+                        relation: distributorprice#last_check
+                        reverse: false
+                        node:
+                            type: value
+                            value:
+                                field: data
+                                format: integer
+                        putAdd: false
+                        putDuplicates: false
+                - name: price
+                  node:
+                    type: relation
+                    relation:
+                        type: primitive
+                        relation: distributorprice#price
+                        reverse: false
+                        node:
+                            type: value
+                            value:
+                                field: data
+                                format: float
+                        putAdd: false
+                        putDuplicates: false
+      context:
+        environment:
+            type: primitive
+            model: distributorprice
+        value: null
+    - type: put
+      id: be7009fb03085a8f7012b055e51a0831
+      name: putDistributorpriceUpdateprice
+      node:
+        type: map
+        map:
+            entries:
+                - name: id
+                  node:
+                    type: value
+                    value:
+                        field: id
+                        format: hex
+                - name: lastCheck
+                  node:
+                    type: relation
+                    relation:
+                        type: primitive
+                        relation: distributorprice#last_check
+                        reverse: false
+                        node:
+                            type: value
+                            value:
+                                field: data
+                                format: integer
+                        putAdd: false
+                        putDuplicates: false
+                - name: price
+                  node:
+                    type: relation
+                    relation:
+                        type: primitive
+                        relation: distributorprice#price
+                        reverse: false
+                        node:
+                            type: value
+                            value:
+                                field: data
+                                format: float
+                        putAdd: false
+                        putDuplicates: false
+      context:
+        environment:
+            type: primitive
+            model: distributorprice
+        value: null
+    - type: put
+      id: e848f0935c744ac0901e7e77ffc094d9
+      name: putItem
+      node:
+        type: map
+        map:
+            entries:
+                - name: id
+                  node:
+                    type: value
+                    value:
+                        field: id
+                        format: hex
+                - name: name
+                  node:
+                    type: value
+                    value:
+                        field: name
+                        format: string
+                - name: itemId
+                  node:
+                    type: relation
+                    relation:
+                        type: primitive
+                        relation: item#item_id
+                        reverse: false
+                        node:
+                            type: value
+                            value:
+                                field: data
+                                format: string
+                        putAdd: false
+                        putDuplicates: false
+      context:
+        environment:
+            type: primitive
+            model: item
+        value: null
+interfaces:
+    - id: a7b24808e5e5ee6a25c46a34563fe259
+      name: Item
+      schema:
+        type: map
+        map:
+            entries:
+                - key: id
+                  schema:
+                    type: primitive
+                    primitive:
+                        model: item
+                        value: id
+                - key: name
+                  schema:
+                    type: primitive
+                    primitive:
+                        value: string
+                - key: itemId
+                  schema:
+                    type: primitive
+                    primitive:
+                        value: string
+                - key: distributorPrices
+                  schema:
+                    type: list
+                    list:
+                        entry:
+                            type: map
+                            map:
+                                entries:
+                                    - key: price
+                                      schema:
+                                        type: primitive
+                                        primitive:
+                                            value: float
+                                    - key: distributor
+                                      schema:
+                                        type: map
+                                        map:
+                                            entries:
+                                                - key: id
+                                                  schema:
+                                                    type: primitive
+                                                    primitive:
+                                                        model: distributor
+                                                        value: id
+                                                - key: name
+                                                  schema:
+                                                    type: primitive
+                                                    primitive:
+                                                        value: string
+                                                - key: url
+                                                  schema:
+                                                    type: primitive
+                                                    primitive:
+                                                        value: string

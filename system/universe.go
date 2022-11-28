@@ -122,6 +122,21 @@ func (rf *Universe) GetOrigin(model UniverseIdentifier) *UniverseIdentifier {
 	return nil
 }
 
+func (rf *Universe) HasAbstract(model UniverseIdentifier, abs UniverseIdentifier) bool {
+	for _, f := range rf.Abstractions {
+		if f.Special.Canonical(rf.Name, rf.Name) != model.Canonical(rf.Name, rf.Name) {
+			continue
+		}
+		if f.Abstract.Canonical(rf.Name, rf.Name) == abs.Canonical(rf.Name, rf.Name) {
+			return true
+		}
+		if rf.HasAbstract(f.Abstract, abs) {
+			return true
+		}
+	}
+	return false
+}
+
 func (rf *Universe) Resolve(ident string, base string) core.ID {
 	id, _ := core.ParseID(ident)
 	if !id.IsNull() {

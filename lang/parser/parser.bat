@@ -1,1 +1,1 @@
-antlr4 -Dlanguage=Go -package vylang *.g4
+antlr4 -Dlanguage=Go -package parser *.g4

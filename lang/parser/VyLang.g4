@@ -1,22 +1,26 @@
 grammar VyLang;
 
-definitions: NL* (NL* definition NL*)* NL*;
+definitions: NL* (NL* definition NL*)* NL* EOF;
 definition: namedPipe;
 
 // Pipe
 
-namedPipe: 'pipe' IDENT pipeContexualized;
-pipeContexualized: 'on' IDENT '->' pipeModifier? NL* pipe;
-pipe: pipeProperty
-     | pipeMap;
-pipeProperty: pipeTerminal
-             | pipeField;
-pipeTerminal: 'id' | 'name' | 'created' | 'data' | 'size' | 'user' | 'value' | IDENT;
-pipeField: IDENT '->' pipeModifier? pipe;
+namedPipe: 'pipe' IDENT contextPipe;
+contextPipe: 'on' pathModel '->' pipeModified;
+pipe: pipeProperty | pipeMap;
+pipeProperty: pipeTerminal | pipeField;
+pipeNamedProperty: IDENT ':' pipeProperty;
+pipeTerminal: 'id' | 'name' | 'created' | 'data' | 'size' | 'user' | 'value';
+pipeField: pipeFieldForward | pipeFieldBackward;
+pipeFieldForward: pathRelation '->' pipeModified;
+pipeFieldBackward: '<-' pathRelation pipeModified;
+pipeModified: pipeModifier? NL* pipe;
 pipeMap: '{' NL? (pipeMapEntry (sep pipeMapEntry)*)? NL? '}';
-pipeMapEntry: IDENT ':' pipe
-             | pipeProperty;
+pipeMapEntry: pipeNamedProperty | pipeProperty;
 pipeModifier: '[' ']';
+pathModel: IDENT | identPath ('/' IDENT?)?;
+pathRelation: IDENT | identPath '#' IDENT ('/' IDENT?)?;
+identPath: IDENT ('.' IDENT)*;
 
 // Separator
 

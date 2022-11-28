@@ -28,6 +28,20 @@ func (v *Stack[T]) Value() T {
 	return v.values[len(v.values)-1]
 }
 
+func (v *Stack[T]) Index(n int) T {
+	return v.values[len(v.values)-1-n]
+}
+
+func (v *Stack[T]) Empty() []T {
+	ts := v.values
+	v.values = nil
+	return ts
+}
+
+func (v *Stack[T]) Clear() {
+	v.values = nil
+}
+
 func (v *Stack[T]) Size() int {
 	return len(v.values)
 }
