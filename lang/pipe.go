@@ -6,8 +6,8 @@ import (
 )
 
 type Pipe struct {
-	Node  *system.Node
-	Model system.UniverseObjectInfo
+	Node  *system.Node              `json:"node"`
+	Model system.UniverseObjectInfo `json:"model"`
 }
 
 func QueryNode[N any](c vyze.Client, p Pipe, tp system.EndpointType) vyze.Q[N] {
