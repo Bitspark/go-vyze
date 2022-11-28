@@ -10,14 +10,20 @@ import (
 )
 
 func TestLibrary_File1(t *testing.T) {
-	l := NewLibrary(nil)
-	source, _ := os.ReadFile("./test/queries1.vy")
-	err := l.Parse(string(source))
+	univ := &system.Universe{}
+	err := univ.LoadFile("./test/vergleichsportal.vyu")
 	if err != nil {
-		t.Fatal()
+		t.Fatal(err)
 	}
 
-	if l.pipes.Size() != 8 {
+	l := NewLibrary(univ)
+	source, _ := os.ReadFile("./test/queries1.vy")
+	err = l.Parse(string(source))
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	if len(l.Pipes) != 8 {
 		t.Fatal()
 	}
 }
@@ -274,8 +280,20 @@ func TestLibrary_Uni1(t *testing.T) {
 }
 
 func TestLibrary_Uni2(t *testing.T) {
-	univ := &system.Universe{}
-	err := univ.LoadFile("./test/vergleichsportal.vyu")
+	client := vyze.NewClient(
+		service.NewServiceClient("https://api.vyze.io/service"),
+		system.NewSystemClient("https://api.vyze.io/system"),
+	)
+
+	client.Service.SetToken("...")
+	lp, _ := system.ReadLayerProfile("...")
+	client.System.SetLayerProfile(lp)
+	client.System.SetDefaultOptions(&system.AccessOptions{
+		Access:      "main_full",
+		AccessNames: []string{"main_full", "main_read", "model_read", "model_extend"},
+	})
+
+	univ, err := client.LoadUniverse("vergleichsportal")
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -288,25 +306,65 @@ func TestLibrary_Uni2(t *testing.T) {
 	pipe, err := lib.ParsePipe(`on distributorprice -> {
 		id, 
 		name, 
+		created,
 		price: price -> value,
 		item -> {id, name}, 
-		distributor -> {id, name}}`)
-	ymlNode, _ := yaml.Marshal(pipe.Node)
-	t.Log(string(ymlNode))
-
-	client := vyze.NewClient(
-		service.NewServiceClient("https://api.vyze.io/service"),
-		system.NewSystemClient("https://api.vyze.io/system"),
-	)
-
-	node, err := pipe.Node.Resolve(*univ)
+		distributor -> name
+	}`)
+	query := QueryNode[any](client, *pipe, "get")
+	rlts, err := query.GetObjects()
 	if err != nil {
 		t.Fatal(err)
 	}
+	for _, rlt := range rlts {
+		t.Log(rlt)
+	}
 
-	rlt, err := client.System.GetNode(node, nil)
+	pipe, err = lib.ParsePipe(`on item -> {
+		id, 
+		itemId: item_id -> value,
+		prices: <- distributorprice#item [] {
+			distributor -> name,
+			price -> value
+		}
+	}`)
+	//yamlPipe, _ := yaml.Marshal(pipe)
+	//t.Log(string(yamlPipe))
+	query = QueryNode[any](client, *pipe, "get")
+	rlts, err = query.GetObjects()
+	if err != nil {
+		t.Fatal(err)
+	}
+	for _, rlt := range rlts {
+		t.Log(rlt)
+	}
+
+	pipe, err = lib.ParsePipe(`on item -> {
+		id,
+		itemId: item_id -> value
+	}`)
+	query = QueryNode[any](client, *pipe, "get")
+	rlts, err = query.GetObjects()
+	if err != nil {
+		t.Fatal(err)
+	}
+	for _, rlt := range rlts {
+		t.Log(rlt)
+	}
+
+	query = QueryNode[any](client, *pipe, "put")
+	rlt, err := query.PutObject(map[string]any{"itemId": "test"})
 	if err != nil {
 		t.Fatal(err)
 	}
 	t.Log(rlt)
+
+	query = QueryNode[any](client, *pipe, "get")
+	rlts, err = query.GetObjects()
+	if err != nil {
+		t.Fatal(err)
+	}
+	for _, rlt := range rlts {
+		t.Log(rlt)
+	}
 }

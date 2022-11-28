@@ -14,8 +14,8 @@ import (
 type Library struct {
 	listener parser.VyLangListener
 
-	namedPipes map[string]*Pipe
-	universes  map[string]*system.Universe
+	Pipes     map[string]*Pipe
+	Universes map[string]*system.Universe
 
 	terms      *util.Stack[string]
 	identPaths *util.Stack[string]
@@ -26,17 +26,19 @@ type Library struct {
 	models     *util.Stack[*system.UniverseObjectInfo]
 	relations  *util.Stack[*system.UniverseObjectInfo]
 	context    string
-	modifier   bool
+	modifier   *bool
+	modifiers  *util.Stack[bool]
 }
 
 func NewLibrary(univ *system.Universe) *Library {
 	l := &Library{
-		namedPipes: map[string]*Pipe{},
-		terms:      util.NewStack[string](),
-		pipes:      util.NewStack[*Pipe](),
-		models:     util.NewStack[*system.UniverseObjectInfo](),
-		relations:  util.NewStack[*system.UniverseObjectInfo](),
-		univ:       univ,
+		Pipes:     map[string]*Pipe{},
+		terms:     util.NewStack[string](),
+		pipes:     util.NewStack[*Pipe](),
+		models:    util.NewStack[*system.UniverseObjectInfo](),
+		relations: util.NewStack[*system.UniverseObjectInfo](),
+		modifiers: util.NewStack[bool](),
+		univ:      univ,
 	}
 	l.listener = &vylangListener{Library: l}
 	return l
@@ -117,6 +119,11 @@ func (v vylangListener) EnterNamedPipe(c *parser.NamedPipeContext) {
 }
 
 func (v vylangListener) EnterPipe(c *parser.PipeContext) {
+	if v.modifier != nil {
+		v.modifiers.Push(*v.modifier)
+		v.modifier = nil
+	}
+
 	if v.context == "model" {
 		v.terms.Pop() // Should be "->"
 		model := v.univ.GetModel(v.identPath, v.univ.Name)
@@ -182,12 +189,16 @@ func (v vylangListener) EnterSep(c *parser.SepContext) {
 }
 
 func (v vylangListener) ExitDefinitions(c *parser.DefinitionsContext) {
+	v.terms.Pop() // Should be "<EOF>"
 }
 
 func (v vylangListener) ExitDefinition(c *parser.DefinitionContext) {
 }
 
 func (v vylangListener) ExitNamedPipe(c *parser.NamedPipeContext) {
+	name := v.terms.Pop()
+	v.terms.Pop() // Should be "pipe"
+	v.Library.Pipes[name] = v.pipes.Pop()
 }
 
 func (v vylangListener) ExitPipe(c *parser.PipeContext) {
@@ -270,7 +281,8 @@ func (v vylangListener) ExitPipeMapEntry(c *parser.PipeMapEntryContext) {
 }
 
 func (v vylangListener) ExitPipeModifier(c *parser.PipeModifierContext) {
-	v.modifier = true
+	t := true
+	v.modifier = &t
 }
 
 func (v vylangListener) ExitSep(c *parser.SepContext) {
@@ -319,18 +331,25 @@ func (v vylangListener) ExitPipeFieldForward(c *parser.PipeFieldForwardContext) 
 	pn := v.pipes.Pop()
 	pf := v.pipes.Value()
 	envType := system.EnvironmentTypePrimitive
-	if v.modifier {
+	nd := *pn.Node
+	mdf := v.modifiers.Pop()
+	if mdf {
 		envType = system.EnvironmentTypeList
+		nd = system.Node{
+			Type: system.NodeTypeList,
+			List: &system.ListNode{
+				Entry: *pn.Node,
+			},
+		}
 	}
 	pf.Node = &system.Node{
 		Type: system.NodeTypeRelation,
 		Relation: &system.RelationNode{
 			Type:     envType,
 			Relation: rel.Mapping.String(),
-			Node:     *pn.Node,
+			Node:     nd,
 		},
 	}
-	v.modifier = false
 }
 
 func (v vylangListener) ExitPipeFieldBackward(c *parser.PipeFieldBackwardContext) {
@@ -340,26 +359,35 @@ func (v vylangListener) ExitPipeFieldBackward(c *parser.PipeFieldBackwardContext
 	pn := v.pipes.Pop()
 	pf := v.pipes.Value()
 	envType := system.EnvironmentTypePrimitive
-	if v.modifier {
+	nd := *pn.Node
+	mdf := v.modifiers.Pop()
+	if mdf {
 		envType = system.EnvironmentTypeList
+		nd = system.Node{
+			Type: system.NodeTypeList,
+			List: &system.ListNode{
+				Entry: *pn.Node,
+			},
+		}
 	}
 	pf.Node = &system.Node{
 		Type: system.NodeTypeRelation,
 		Relation: &system.RelationNode{
 			Type:     envType,
 			Relation: rel.Mapping.String(),
-			Node:     *pn.Node,
+			Node:     nd,
 			Reverse:  true,
 		},
 	}
-	v.modifier = false
 }
 
 func (v vylangListener) EnterPipeModified(c *parser.PipeModifiedContext) {
+	f := false
+	v.modifier = &f
 }
 
 func (v vylangListener) ExitPipeModified(c *parser.PipeModifiedContext) {
-	v.models.Pop()
+	v.pipes.Value().Model = *v.models.Pop()
 }
 
 func (v vylangListener) EnterPathModel(c *parser.PathModelContext) {

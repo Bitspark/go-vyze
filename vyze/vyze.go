@@ -24,18 +24,18 @@ func NewClient(serviceClient *service.ServiceClient, systemClient *system.System
 	}
 }
 
-func (v *Client) LoadUniverse(name string) error {
+func (v *Client) LoadUniverse(name string) (*system.Universe, error) {
 	univID, err := v.Service.ResolveUniverse(name)
 	if err != nil {
-		return err
+		return nil, err
 	}
 	univ, err := v.Service.LoadUniverse(univID)
 	if err != nil {
-		return err
+		return nil, err
 	}
 	v.Universes[name] = &univ
 	v.SelectedUniverse = name
-	return nil
+	return &univ, nil
 }
 
 func (v *Client) Universe() *system.Universe {
@@ -45,11 +45,11 @@ func (v *Client) Universe() *system.Universe {
 // Objects
 
 type Q[N any] struct {
-	epType    system.EndpointType
-	client    Client
-	universe  *system.Universe
-	modelID   core.ID
-	modelNode system.Node
+	Type      system.EndpointType
+	Client    Client
+	Universe  *system.Universe
+	ModelID   core.ID
+	ModelNode system.Node
 	objectID  core.ID
 	orders    []system.Order
 	filters   []system.Filter
@@ -58,7 +58,7 @@ type Q[N any] struct {
 	err       error
 }
 
-func Query[N any](c Client, ep string) Q[N] {
+func QueryReference[N any](c Client, ep string) Q[N] {
 	u := c.Universe()
 	ndEp := u.GetEndpoint(ep)
 	if ndEp == nil {
@@ -67,14 +67,14 @@ func Query[N any](c Client, ep string) Q[N] {
 		}
 	}
 	q := Q[N]{
-		epType:    ndEp.Type,
-		client:    c,
-		universe:  u,
-		modelNode: ndEp.Node,
+		Type:      ndEp.Type,
+		Client:    c,
+		Universe:  u,
+		ModelNode: ndEp.Node,
 	}
 	q = q.Model(ndEp.Context.Environment.Model)
 	if id, ok := ndEp.Context.Value.(core.ID); ok {
-		q.modelID = id
+		q.ModelID = id
 	}
 	return q
 }
@@ -91,9 +91,9 @@ func (q Q[N]) Model(model string) Q[N] {
 	if q.err != nil {
 		return q
 	}
-	m := q.universe.GetModel(model, q.universe.Name)
+	m := q.Universe.GetModel(model, q.Universe.Name)
 	if m != nil && m.ObjectID != nil {
-		q.modelID = *m.ObjectID
+		q.ModelID = *m.ObjectID
 	} else {
 		q.err = fmt.Errorf("model not found: %s", model)
 	}
@@ -101,8 +101,8 @@ func (q Q[N]) Model(model string) Q[N] {
 }
 
 func (q Q[N]) Filter(path string, operator system.OperatorType, value any) Q[N] {
-	if q.epType != system.EndpointTypeGet {
-		q.err = fmt.Errorf("wrong endpoint type: %s (filter requires get)", q.epType)
+	if q.Type != system.EndpointTypeGet {
+		q.err = fmt.Errorf("wrong endpoint type: %s (filter requires get)", q.Type)
 		return q
 	}
 	pathSource, err := q.pathSource(path)
@@ -126,8 +126,8 @@ func (q Q[N]) Equals(path string, value any) Q[N] {
 }
 
 func (q Q[N]) Sort(path string, asc bool) Q[N] {
-	if q.epType != system.EndpointTypeGet {
-		q.err = fmt.Errorf("wrong endpoint type: %s (sort requires get)", q.epType)
+	if q.Type != system.EndpointTypeGet {
+		q.err = fmt.Errorf("wrong endpoint type: %s (sort requires get)", q.Type)
 		return q
 	}
 	pathSource, err := q.pathSource(path)
@@ -146,8 +146,8 @@ func (q Q[N]) Sort(path string, asc bool) Q[N] {
 }
 
 func (q Q[N]) Limit(limit int) Q[N] {
-	if q.epType != system.EndpointTypeGet {
-		q.err = fmt.Errorf("wrong endpoint type: %s (limit requires get)", q.epType)
+	if q.Type != system.EndpointTypeGet {
+		q.err = fmt.Errorf("wrong endpoint type: %s (limit requires get)", q.Type)
 		return q
 	}
 	q.limit = &limit
@@ -155,8 +155,8 @@ func (q Q[N]) Limit(limit int) Q[N] {
 }
 
 func (q Q[N]) Offset(offset int) Q[N] {
-	if q.epType != system.EndpointTypeGet {
-		q.err = fmt.Errorf("wrong endpoint type: %s (offset requires get)", q.epType)
+	if q.Type != system.EndpointTypeGet {
+		q.err = fmt.Errorf("wrong endpoint type: %s (offset requires get)", q.Type)
 		return q
 	}
 	q.offset = &offset
@@ -167,44 +167,44 @@ func (q Q[N]) Slice(offset int, limit int) Q[N] {
 	return q.Offset(offset).Limit(limit)
 }
 
-func (q Q[N]) GetObject() (*N, error) {
+func (q Q[N]) GetObject() (N, error) {
+	var respObj N
 	if q.err != nil {
-		return nil, q.err
+		return respObj, q.err
 	}
-	if q.epType != system.EndpointTypeGet {
-		return nil, fmt.Errorf("wrong endpoint type: %s (expected get)", q.epType)
+	if q.Type != system.EndpointTypeGet {
+		return respObj, fmt.Errorf("wrong endpoint type: %s (expected get)", q.Type)
 	}
-	nd, err := q.objectNode().Resolve(*q.universe)
+	nd, err := q.objectNode().Resolve(*q.Universe)
 	if err != nil {
-		return nil, err
+		return respObj, err
 	}
-	val, err := q.client.System.GetNode(nd, nil)
+	val, err := q.Client.System.GetNode(nd, nil)
 	if err != nil {
-		return nil, err
+		return respObj, err
 	}
 	bts, err := json.Marshal(val)
 	if err != nil {
-		return nil, err
+		return respObj, err
 	}
-	var respObj N
 	if err := json.Unmarshal(bts, &respObj); err != nil {
-		return nil, err
+		return respObj, err
 	}
-	return &respObj, nil
+	return respObj, nil
 }
 
 func (q Q[N]) GetObjects() ([]N, error) {
 	if q.err != nil {
 		return nil, q.err
 	}
-	if q.epType != system.EndpointTypeGet {
-		return nil, fmt.Errorf("wrong endpoint type: %s (expected get)", q.epType)
+	if q.Type != system.EndpointTypeGet {
+		return nil, fmt.Errorf("wrong endpoint type: %s (expected get)", q.Type)
 	}
-	nd, err := q.listNode().Resolve(*q.universe)
+	nd, err := q.listNode().Resolve(*q.Universe)
 	if err != nil {
 		return nil, err
 	}
-	val, err := q.client.System.GetNode(nd, nil)
+	val, err := q.Client.System.GetNode(nd, nil)
 	if err != nil {
 		return nil, err
 	}
@@ -219,44 +219,44 @@ func (q Q[N]) GetObjects() ([]N, error) {
 	return respObjs, nil
 }
 
-func (q Q[N]) PutObject(obj *N) (*N, error) {
+func (q Q[N]) PutObject(obj N) (N, error) {
+	var respObj N
 	if q.err != nil {
-		return nil, q.err
+		return respObj, q.err
 	}
-	if q.epType != system.EndpointTypePut {
-		return nil, fmt.Errorf("wrong endpoint type: %s (expected put)", q.epType)
+	if q.Type != system.EndpointTypePut {
+		return respObj, fmt.Errorf("wrong endpoint type: %s (expected put)", q.Type)
 	}
-	nd, err := q.objectNode().Resolve(*q.universe)
+	nd, err := q.objectNode().Resolve(*q.Universe)
 	if err != nil {
-		return nil, err
+		return respObj, err
 	}
-	val, err := q.client.System.PutNode(nd, *obj, "", nil)
+	val, err := q.Client.System.PutNode(nd, obj, "", nil)
 	if err != nil {
-		return nil, err
+		return respObj, err
 	}
 	bts, err := json.Marshal(val)
 	if err != nil {
-		return nil, err
+		return respObj, err
 	}
-	var respObj N
 	if err := json.Unmarshal(bts, &respObj); err != nil {
-		return nil, err
+		return respObj, err
 	}
-	return &respObj, nil
+	return respObj, nil
 }
 
 func (q Q[N]) PutObjects(objs []N) ([]N, error) {
 	if q.err != nil {
 		return nil, q.err
 	}
-	if q.epType != system.EndpointTypePut {
-		return nil, fmt.Errorf("wrong endpoint type: %s (expected put)", q.epType)
+	if q.Type != system.EndpointTypePut {
+		return nil, fmt.Errorf("wrong endpoint type: %s (expected put)", q.Type)
 	}
-	nd, err := q.listNode().Resolve(*q.universe)
+	nd, err := q.listNode().Resolve(*q.Universe)
 	if err != nil {
 		return nil, err
 	}
-	val, err := q.client.System.PutNode(nd, objs, "", nil)
+	val, err := q.Client.System.PutNode(nd, objs, "", nil)
 	if err != nil {
 		return nil, err
 	}
@@ -272,136 +272,46 @@ func (q Q[N]) PutObjects(objs []N) ([]N, error) {
 }
 
 func (q Q[N]) pathSource(path string) (*system.ValueSource, error) {
-	pathNode := q.modelNode
-	var sourceNode *system.Node
-	var format system.FormatType
-	curNode := &system.Node{}
-	paths := strings.Split(path, ".")
-
-	if len(paths) > 0 && paths[0] != "" {
-		paths = append(paths, "")
-	}
-
-	descendPath := func(nd system.Node, ndPtr *system.Node) {
-		if sourceNode == nil {
-			sourceNode = &nd
-			curNode = ndPtr
-		} else {
-			*curNode = nd
-			curNode = ndPtr
-		}
-	}
-
-	for _, p := range paths {
-		if p != "" {
-			// Map
-			if pathNode.Type == system.NodeTypeMap {
-				for _, e := range pathNode.Map.Entries {
-					if e.Name == p {
-						pathNode = e.Node
-						goto descendMap
-					}
-				}
-				return nil, fmt.Errorf("entry not found: %s", p)
-			}
-		}
-
-		for {
-			// Value
-			if pathNode.Type == system.NodeTypeValue {
-				nd := system.Node{
-					Type: system.NodeTypeValue,
-					Value: &system.ValueNode{
-						Field:  pathNode.Value.Field,
-						Format: pathNode.Value.Format,
-					},
-				}
-				format = pathNode.Value.Format
-				descendPath(nd, nil)
-				break
-			}
-
-			// Aggregate
-			if pathNode.Type == system.NodeTypeAggregate {
-				nd := system.Node{
-					Type: system.NodeTypeAggregate,
-					Aggregate: &system.AggregateNode{
-						Source:   pathNode.Aggregate.Source,
-						Function: pathNode.Aggregate.Function,
-					},
-				}
-				format = pathNode.Aggregate.Source.Format
-				descendPath(nd, nil)
-				break
-			}
-
-			// Instance
-			if pathNode.Type == system.NodeTypeInstance {
-				nd := system.Node{
-					Type: system.NodeTypeInstance,
-					Instance: &system.InstanceNode{
-						Format:   pathNode.Instance.Format,
-						Switches: pathNode.Instance.Switches,
-					},
-				}
-				format = pathNode.Instance.Format
-				descendPath(nd, nil)
-				break
-			}
-
-			// Relation
-			if pathNode.Type == system.NodeTypeRelation {
-				nd := system.Node{
-					Type: system.NodeTypeRelation,
-					Relation: &system.RelationNode{
-						Type:     pathNode.Relation.Type,
-						Relation: pathNode.Relation.Relation,
-						Reverse:  pathNode.Relation.Reverse,
-					},
-				}
-				pathNode = pathNode.Relation.Node
-				descendPath(nd, &nd.Relation.Node)
-				continue
-			}
-
-			// Specials
-			if pathNode.Type == system.NodeTypeSpecials {
-				nd := system.Node{
-					Type: system.NodeTypeSpecials,
-					Specials: &system.SpecialsNode{
-						Type:     "",
-						Direct:   false,
-						Indirect: false,
-					},
-				}
-				pathNode = pathNode.Specials.Node
-				descendPath(nd, &nd.Specials.Node)
-				continue
-			}
-
-			return nil, fmt.Errorf("cannot descend further: %s, %v", p, pathNode)
-		}
-
-	descendMap:
-	}
-
+	node, format := cutMapNodes(strings.Split(path, "."), q.ModelNode)
 	return &system.ValueSource{
 		Type:   system.SourceTypeNode,
 		Format: format,
-		Node:   sourceNode,
+		Node:   &node,
 	}, nil
 }
 
 func (q Q[N]) objectNode() system.Node {
 	// Embed into context
-	node := system.Node{
-		Type: system.NodeTypeContext,
-		Context: &system.ContextNode{
-			Context: system.Context{
-				Value: q.objectID,
+	var node system.Node
+
+	if !q.objectID.IsNull() {
+		node = system.Node{
+			Type: system.NodeTypeContext,
+			Context: &system.ContextNode{
+				Context: system.Context{
+					Value: q.objectID,
+				},
+				Node: q.ModelNode,
 			},
-			Node: q.modelNode,
-		},
+		}
+	} else {
+		node = system.Node{
+			Type: system.NodeTypeContext,
+			Context: &system.ContextNode{
+				Context: system.Context{
+					Value: q.ModelID,
+				},
+				Node: system.Node{
+					Type: system.NodeTypeSpecials,
+					Specials: &system.SpecialsNode{
+						Type:     system.EnvironmentTypePrimitive,
+						Direct:   true,
+						Indirect: true,
+						Node:     q.ModelNode,
+					},
+				},
+			},
+		}
 	}
 
 	return node
@@ -414,7 +324,7 @@ func (q Q[N]) listNode() system.Node {
 	node := system.Node{
 		Type: system.NodeTypeList,
 		List: &system.ListNode{
-			Entry: q.modelNode,
+			Entry: q.ModelNode,
 		},
 	}
 
@@ -457,7 +367,7 @@ func (q Q[N]) listNode() system.Node {
 		Type: system.NodeTypeContext,
 		Context: &system.ContextNode{
 			Context: system.Context{
-				Value: q.modelID,
+				Value: q.ModelID,
 			},
 			Node: system.Node{
 				Type: system.NodeTypeSpecials,
@@ -472,4 +382,52 @@ func (q Q[N]) listNode() system.Node {
 	}
 
 	return node
+}
+
+func cutMapNodes(path []string, iterNode system.Node) (system.Node, system.FormatType) {
+	iterType := iterNode.Type
+
+	if iterType == "map" {
+		if len(path) == 0 {
+			panic("Path leads to a map. Add a field by attaching it with a dot (.)")
+		}
+
+		for _, e := range iterNode.Map.Entries {
+			if e.Name == path[0] {
+				return cutMapNodes(path[1:], e.Node)
+			}
+		}
+		panic("Entry not found: {path[0]}")
+	} else if iterType == "value" {
+		if len(path) != 0 {
+			panic("Path exceeds the node structure. Leftover path: ...{" + strings.Join(path, "."))
+		}
+		return iterNode, iterNode.Value.Format
+	} else if iterType == "relation" {
+		returnNode, format := cutMapNodes(path, iterNode.Relation.Node)
+		iterNode = system.Node{
+			Type: system.NodeTypeRelation,
+			Relation: &system.RelationNode{
+				Type:     iterNode.Relation.Type,
+				Relation: iterNode.Relation.Relation,
+				Reverse:  iterNode.Relation.Reverse,
+				Node:     returnNode,
+			},
+		}
+		return iterNode, format
+	} else if iterType == "specials" {
+		returnNode, format := cutMapNodes(path, iterNode.Specials.Node)
+		iterNode = system.Node{
+			Type: system.NodeTypeRelation,
+			Specials: &system.SpecialsNode{
+				Type:     iterNode.Specials.Type,
+				Direct:   iterNode.Specials.Direct,
+				Indirect: iterNode.Specials.Indirect,
+				Node:     returnNode,
+			},
+		}
+		return iterNode, format
+	}
+
+	panic("Unsupported node type: {iterType}")
 }
