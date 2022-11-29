@@ -32,10 +32,10 @@ var vylangParserStaticData struct {
 func vylangParserInit() {
 	staticData := &vylangParserStaticData
 	staticData.literalNames = []string{
-		"", "'pipe'", "'on'", "'->'", "':'", "'id'", "'name'", "'created'",
-		"'data'", "'size'", "'user'", "'value'", "'string'", "'integer'", "'float'",
-		"'boolean'", "'<-'", "'{'", "'}'", "'['", "']'", "'/'", "'#'", "'.'",
-		"','",
+		"", "'pipe'", "'on'", "'->'", "':'", "'@id'", "'@name'", "'@created'",
+		"'@data'", "'@size'", "'@user'", "'@value'", "'@string'", "'@integer'",
+		"'@float'", "'@boolean'", "'<-'", "'{'", "'}'", "'['", "']'", "'/'",
+		"'#'", "'.'", "','",
 	}
 	staticData.symbolicNames = []string{
 		"", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "",

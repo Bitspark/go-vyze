@@ -205,7 +205,7 @@ func (v vylangListener) ExitPipe(c *parser.PipeContext) {
 }
 
 func (v vylangListener) ExitPipeTerminal(c *parser.PipeTerminalContext) {
-	t := v.terms.Pop()
+	t := v.terms.Pop()[1:]
 	p := v.pipes.Value()
 	v.entryName = t
 
