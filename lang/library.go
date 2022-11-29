@@ -261,6 +261,26 @@ func (v vylangListener) ExitPipeTerminal(c *parser.PipeTerminalContext) {
 			Type:  system.NodeTypeValue,
 			Value: &system.ValueNode{Field: field, Format: format},
 		}
+	case string(system.FormatTypeString):
+		p.Node = &system.Node{
+			Type:  system.NodeTypeValue,
+			Value: &system.ValueNode{Field: system.FieldTypeData, Format: system.FormatTypeString},
+		}
+	case string(system.FormatTypeInteger):
+		p.Node = &system.Node{
+			Type:  system.NodeTypeValue,
+			Value: &system.ValueNode{Field: system.FieldTypeData, Format: system.FormatTypeInteger},
+		}
+	case string(system.FormatTypeFloat):
+		p.Node = &system.Node{
+			Type:  system.NodeTypeValue,
+			Value: &system.ValueNode{Field: system.FieldTypeData, Format: system.FormatTypeFloat},
+		}
+	case string(system.FormatTypeBoolean):
+		p.Node = &system.Node{
+			Type:  system.NodeTypeValue,
+			Value: &system.ValueNode{Field: system.FieldTypeData, Format: system.FormatTypeBoolean},
+		}
 	}
 }
 
