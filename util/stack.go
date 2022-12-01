@@ -1,6 +1,9 @@
 package util
 
-import "fmt"
+import (
+	"fmt"
+	"strings"
+)
 
 type Stack[T comparable] struct {
 	values []T
@@ -15,6 +18,10 @@ func (v *Stack[T]) Push(t T) {
 }
 
 func (v *Stack[T]) Pop() T {
+	if len(v.values) == 0 {
+		var t T
+		return t
+	}
 	t := v.values[len(v.values)-1]
 	v.values = v.values[:len(v.values)-1]
 	return t
@@ -48,4 +55,12 @@ func (v *Stack[T]) Size() int {
 
 func (v *Stack[T]) String() string {
 	return fmt.Sprintf("%v", v.values)
+}
+
+func (v *Stack[T]) Join(sep string) string {
+	strs := []string{}
+	for _, s := range v.values {
+		strs = append(strs, fmt.Sprintf("%v", s))
+	}
+	return strings.Join(strs, sep)
 }

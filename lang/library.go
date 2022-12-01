@@ -7,12 +7,11 @@ import (
 	"github.com/Bitspark/go-vyze/system"
 	"github.com/Bitspark/go-vyze/util"
 	"github.com/antlr/antlr4/runtime/Go/antlr/v4"
-	"log"
 	"strings"
 )
 
 type Library struct {
-	listener parser.VyLangListener
+	listener listener
 
 	Pipes     map[string]*Pipe
 	Universes map[string]*system.Universe
@@ -23,66 +22,125 @@ type Library struct {
 	pipes      *util.Stack[*Pipe]
 	univ       *system.Universe
 	entryName  string
+	entryNames *util.Stack[string]
 	models     *util.Stack[*system.UniverseObjectInfo]
 	relations  *util.Stack[*system.UniverseObjectInfo]
 	context    string
 	modifier   *bool
 	modifiers  *util.Stack[bool]
+	errors     []ParseError
+}
+
+type ParseError struct {
+	Err    error  `json:"error"`
+	Path   string `json:"path"`
+	Line   int    `json:"line"`
+	Column int    `json:"column"`
+}
+
+func (pe ParseError) String() string {
+	if pe.Line > 0 || pe.Column > 0 {
+		if len(pe.Path) > 0 {
+			return fmt.Sprintf("[l%d:%d, %s] %v", pe.Line, pe.Column, pe.Path, pe.Err)
+		} else {
+			return fmt.Sprintf("[l%d:%d] %v", pe.Line, pe.Column, pe.Err)
+		}
+	} else {
+		if len(pe.Path) > 0 {
+			return fmt.Sprintf("[%s] %v", pe.Path, pe.Err)
+		} else {
+			return fmt.Sprintf("%v", pe.Err)
+		}
+	}
 }
 
 func NewLibrary(univ *system.Universe) *Library {
 	l := &Library{
-		Pipes:     map[string]*Pipe{},
-		terms:     util.NewStack[string](),
-		pipes:     util.NewStack[*Pipe](),
-		models:    util.NewStack[*system.UniverseObjectInfo](),
-		relations: util.NewStack[*system.UniverseObjectInfo](),
-		modifiers: util.NewStack[bool](),
-		univ:      univ,
+		Pipes:      map[string]*Pipe{},
+		terms:      util.NewStack[string](),
+		pipes:      util.NewStack[*Pipe](),
+		entryNames: util.NewStack[string](),
+		models:     util.NewStack[*system.UniverseObjectInfo](),
+		relations:  util.NewStack[*system.UniverseObjectInfo](),
+		modifiers:  util.NewStack[bool](),
+		univ:       univ,
 	}
 	l.listener = &vylangListener{Library: l}
 	return l
 }
 
-func (l *Library) Parse(source string) error {
+func (l *Library) Parse(source string) []ParseError {
+	if l.univ == nil {
+		return []ParseError{{Err: fmt.Errorf("require universe")}}
+	}
+
 	is := antlr.NewInputStream(source)
 	lexer := parser.NewVyLangLexer(is)
 	stream := antlr.NewCommonTokenStream(lexer, antlr.TokenDefaultChannel)
 
 	vyParser := parser.NewVyLangParser(stream)
+	vyParser.AddErrorListener(l.listener)
 
 	antlr.ParseTreeWalkerDefault.Walk(l.listener, vyParser.Definitions())
 
 	if l.terms.Size() != 0 {
-		return fmt.Errorf("have extra terms: %s", l.terms.String())
+		return []ParseError{{Err: fmt.Errorf("have extra terms: %s", l.terms.String())}}
 	}
 
-	return nil
+	return l.errors
 }
 
-func (l *Library) ParsePipe(source string) (*Pipe, error) {
+func (l *Library) ParsePipe(source string) (*Pipe, []ParseError) {
+	if l.univ == nil {
+		return nil, []ParseError{{Err: fmt.Errorf("require universe")}}
+	}
+
 	is := antlr.NewInputStream(source)
 	lexer := parser.NewVyLangLexer(is)
 	stream := antlr.NewCommonTokenStream(lexer, antlr.TokenDefaultChannel)
 
 	vyParser := parser.NewVyLangParser(stream)
+	vyParser.AddErrorListener(l.listener)
 
 	antlr.ParseTreeWalkerDefault.Walk(l.listener, vyParser.ContextPipe())
 
 	if l.terms.Size() != 0 {
-		return nil, fmt.Errorf("have extra terms: %s", l.terms.String())
+		return nil, []ParseError{{Err: fmt.Errorf("have extra terms: %s", l.terms.String())}}
 	}
 	if l.pipes.Size() != 1 {
-		return nil, errors.New("invalid pipe")
+		return nil, []ParseError{{Err: fmt.Errorf("invalid pipe")}}
 	}
 
-	return l.pipes.Pop(), nil
+	return l.pipes.Pop(), l.errors
 }
 
-var _ parser.VyLangListener = &vylangListener{}
+type listener interface {
+	parser.VyLangListener
+	antlr.ErrorListener
+}
+
+var _ listener = vylangListener{}
 
 type vylangListener struct {
 	*Library
+}
+
+const (
+	ErrTypeUniverse = 1 << iota
+	ErrTypeAbort
+	ErrTypeWarning
+)
+
+func (v vylangListener) addError(ctx antlr.ParserRuleContext, err error, errType int) {
+	if errType == ErrTypeWarning {
+		return
+	}
+	v.errors = append(v.errors, ParseError{
+		Err:    err,
+		Path:   v.entryNames.Join("."),
+		Line:   ctx.GetStart().GetLine(),
+		Column: ctx.GetStart().GetColumn(),
+	})
 }
 
 func (v vylangListener) VisitTerminal(node antlr.TerminalNode) {
@@ -124,42 +182,63 @@ func (v vylangListener) EnterPipe(c *parser.PipeContext) {
 		v.modifier = nil
 	}
 
+	v.entryNames.Push(v.identPath)
+
 	if v.context == "model" {
 		v.terms.Pop() // Should be "->"
 		model := v.univ.GetModel(v.identPath, v.univ.Name)
 		if model == nil {
-			log.Printf("model not found: %s", v.identPath)
+			v.addError(c, fmt.Errorf("model '%s' not found", v.identPath), ErrTypeUniverse)
 		}
 		v.models.Push(model)
 		v.identPaths = nil
 	} else if v.context == "forward" {
 		v.terms.Pop() // Should be "->"
-		rel := v.univ.GetModel(fmt.Sprintf("%s#%s/", v.models.Value().Mapping.String(), v.identPath), v.univ.Name)
-		if rel == nil {
-			log.Printf("relation not found: %s", v.identPath)
+		if v.models.Value() == nil {
+			v.addError(c, fmt.Errorf("invalid model"), ErrTypeWarning)
+			v.relations.Push(nil)
+			v.models.Push(nil)
+		} else {
+			rel := v.univ.GetModel(fmt.Sprintf("%s#%s/", v.models.Value().Mapping.String(), v.identPath), v.univ.Name)
+			var model *system.UniverseObjectInfo
+			if rel == nil {
+				v.addError(c, fmt.Errorf("relation '%s' not found", v.identPath), ErrTypeUniverse)
+			} else {
+				model = v.univ.GetModel(v.univ.GetTarget(rel.Mapping).String(), v.univ.Name)
+				if model == nil {
+					v.addError(c, fmt.Errorf("model '%s' not found", v.univ.GetOrigin(rel.Mapping).String()), ErrTypeUniverse)
+				}
+			}
+			v.relations.Push(rel)
+			v.models.Push(model)
 		}
-		v.relations.Push(rel)
-		model := v.univ.GetModel(v.univ.GetTarget(rel.Mapping).String(), v.univ.Name)
-		if model == nil {
-			log.Printf("model not found: %s", v.univ.GetOrigin(rel.Mapping).String())
-		}
-		v.models.Push(model)
 		v.identPaths = nil
 	} else if v.context == "backward" {
 		v.terms.Pop() // Should be "<-"
-		rel := v.univ.GetModel(fmt.Sprintf("%s/", v.identPath), v.univ.Name)
-		if rel == nil {
-			log.Printf("relation not found: %s", v.identPath)
+		if v.models.Value() == nil {
+			v.addError(c, fmt.Errorf("invalid model"), ErrTypeWarning)
+			v.relations.Push(nil)
+			v.models.Push(nil)
+		} else {
+			rel := v.univ.GetModel(fmt.Sprintf("%s/", v.identPath), v.univ.Name)
+			var model *system.UniverseObjectInfo
+			if rel == nil {
+				v.addError(c, fmt.Errorf("relation '%s' not found", v.identPath), ErrTypeUniverse)
+			} else {
+				model = v.univ.GetModel(v.univ.GetOrigin(rel.Mapping).String(), v.univ.Name)
+				if model == nil {
+					v.addError(c, fmt.Errorf("model '%s' not found", v.univ.GetOrigin(rel.Mapping).String()), ErrTypeUniverse)
+				}
+			}
+			v.relations.Push(rel)
+			v.models.Push(model)
 		}
-		v.relations.Push(rel)
-		model := v.univ.GetModel(v.univ.GetOrigin(rel.Mapping).String(), v.univ.Name)
-		if model == nil {
-			log.Printf("model not found: %s", v.univ.GetOrigin(rel.Mapping).String())
-		}
-		v.models.Push(model)
 		v.identPaths = nil
 	}
 	v.context = ""
+
+	//v.entryNames.Push(v.entryName)
+	v.entryName = ""
 }
 
 func (v vylangListener) EnterPipeTerminal(c *parser.PipeTerminalContext) {
@@ -202,6 +281,7 @@ func (v vylangListener) ExitNamedPipe(c *parser.NamedPipeContext) {
 }
 
 func (v vylangListener) ExitPipe(c *parser.PipeContext) {
+	v.entryName = v.entryNames.Pop()
 }
 
 func (v vylangListener) ExitPipeTerminal(c *parser.PipeTerminalContext) {
@@ -235,31 +315,15 @@ func (v vylangListener) ExitPipeTerminal(c *parser.PipeTerminalContext) {
 			Type:  system.NodeTypeValue,
 			Value: &system.ValueNode{Field: system.FieldTypeUser, Format: system.FormatTypeHex},
 		}
-	case string(system.FieldTypeData):
+	case string(system.FormatTypeBase64):
 		p.Node = &system.Node{
 			Type:  system.NodeTypeValue,
 			Value: &system.ValueNode{Field: system.FieldTypeData, Format: system.FormatTypeBase64},
 		}
-	case "value":
-		field := system.FieldTypeData
-		format := system.FormatTypeBase64
-		if v.univ.HasAbstract(v.models.Value().Mapping, system.ParseUniverseObjectIdentifier("data.@string")) {
-			format = system.FormatTypeString
-		} else if v.univ.HasAbstract(v.models.Value().Mapping, system.ParseUniverseObjectIdentifier("data.@integer")) {
-			format = system.FormatTypeInteger
-		} else if v.univ.HasAbstract(v.models.Value().Mapping, system.ParseUniverseObjectIdentifier("data.@float")) {
-			format = system.FormatTypeFloat
-		} else if v.univ.HasAbstract(v.models.Value().Mapping, system.ParseUniverseObjectIdentifier("data.@boolean")) {
-			format = system.FormatTypeBoolean
-		} else if v.univ.HasAbstract(v.models.Value().Mapping, system.ParseUniverseObjectIdentifier("data.@data")) {
-			format = system.FormatTypeBase64
-		} else {
-			field = system.FieldTypeID
-			format = system.FormatTypeHex
-		}
+	case string(system.FormatTypeHex):
 		p.Node = &system.Node{
 			Type:  system.NodeTypeValue,
-			Value: &system.ValueNode{Field: field, Format: format},
+			Value: &system.ValueNode{Field: system.FieldTypeData, Format: system.FormatTypeHex},
 		}
 	case string(system.FormatTypeString):
 		p.Node = &system.Node{
@@ -281,6 +345,27 @@ func (v vylangListener) ExitPipeTerminal(c *parser.PipeTerminalContext) {
 			Type:  system.NodeTypeValue,
 			Value: &system.ValueNode{Field: system.FieldTypeData, Format: system.FormatTypeBoolean},
 		}
+	case "auto", "value": // TODO: Eventually remove value
+		field := system.FieldTypeData
+		format := system.FormatTypeBase64
+		if v.univ.HasAbstract(v.models.Value().Mapping, system.ParseUniverseObjectIdentifier("data.@string")) {
+			format = system.FormatTypeString
+		} else if v.univ.HasAbstract(v.models.Value().Mapping, system.ParseUniverseObjectIdentifier("data.@integer")) {
+			format = system.FormatTypeInteger
+		} else if v.univ.HasAbstract(v.models.Value().Mapping, system.ParseUniverseObjectIdentifier("data.@float")) {
+			format = system.FormatTypeFloat
+		} else if v.univ.HasAbstract(v.models.Value().Mapping, system.ParseUniverseObjectIdentifier("data.@boolean")) {
+			format = system.FormatTypeBoolean
+		} else if v.univ.HasAbstract(v.models.Value().Mapping, system.ParseUniverseObjectIdentifier("data.@data")) {
+			format = system.FormatTypeBase64
+		} else {
+			field = system.FieldTypeID
+			format = system.FormatTypeHex
+		}
+		p.Node = &system.Node{
+			Type:  system.NodeTypeValue,
+			Value: &system.ValueNode{Field: field, Format: format},
+		}
 	}
 }
 
@@ -293,6 +378,21 @@ func (v vylangListener) ExitPipeMap(c *parser.PipeMapContext) {
 func (v vylangListener) ExitPipeMapEntry(c *parser.PipeMapEntryContext) {
 	pe := v.pipes.Pop()
 	pm := v.pipes.Value()
+
+	if pm == nil {
+		v.addError(c, fmt.Errorf("invalid pipe"), ErrTypeAbort)
+		return
+	}
+
+	if pm.Node == nil || pm.Node.Map == nil {
+		v.addError(c, fmt.Errorf("invalid map node"), ErrTypeAbort)
+		return
+	}
+
+	if pe.Node == nil {
+		v.addError(c, fmt.Errorf("invalid entry node"), ErrTypeAbort)
+		return
+	}
 
 	pm.Node.Map.Entries = append(pm.Node.Map.Entries, system.MapNodeEntry{
 		Name: v.entryName,
@@ -347,8 +447,17 @@ func (v vylangListener) EnterPipeFieldBackward(c *parser.PipeFieldBackwardContex
 
 func (v vylangListener) ExitPipeFieldForward(c *parser.PipeFieldForwardContext) {
 	rel := v.relations.Pop()
-	v.entryName = v.identPath
+	relIdent := ""
+	if rel == nil {
+		v.addError(c, fmt.Errorf("invalid relation"), ErrTypeWarning)
+	} else {
+		relIdent = rel.Mapping.String()
+	}
 	pn := v.pipes.Pop()
+	if pn == nil || pn.Node == nil {
+		v.addError(c, fmt.Errorf("invalid node"), ErrTypeAbort)
+		return
+	}
 	pf := v.pipes.Value()
 	envType := system.EnvironmentTypePrimitive
 	nd := *pn.Node
@@ -366,7 +475,7 @@ func (v vylangListener) ExitPipeFieldForward(c *parser.PipeFieldForwardContext) 
 		Type: system.NodeTypeRelation,
 		Relation: &system.RelationNode{
 			Type:     envType,
-			Relation: rel.Mapping.String(),
+			Relation: relIdent,
 			Node:     nd,
 		},
 	}
@@ -374,9 +483,17 @@ func (v vylangListener) ExitPipeFieldForward(c *parser.PipeFieldForwardContext) 
 
 func (v vylangListener) ExitPipeFieldBackward(c *parser.PipeFieldBackwardContext) {
 	rel := v.relations.Pop()
-	v.identPaths = nil
-	v.entryName = v.identPath
+	relIdent := ""
+	if rel == nil {
+		v.addError(c, fmt.Errorf("invalid relation"), ErrTypeWarning)
+	} else {
+		relIdent = rel.Mapping.String()
+	}
 	pn := v.pipes.Pop()
+	if pn == nil || pn.Node == nil {
+		v.addError(c, fmt.Errorf("invalid node"), ErrTypeAbort)
+		return
+	}
 	pf := v.pipes.Value()
 	envType := system.EnvironmentTypePrimitive
 	nd := *pn.Node
@@ -394,7 +511,7 @@ func (v vylangListener) ExitPipeFieldBackward(c *parser.PipeFieldBackwardContext
 		Type: system.NodeTypeRelation,
 		Relation: &system.RelationNode{
 			Type:     envType,
-			Relation: rel.Mapping.String(),
+			Relation: relIdent,
 			Node:     nd,
 			Reverse:  true,
 		},
@@ -407,7 +524,17 @@ func (v vylangListener) EnterPipeModified(c *parser.PipeModifiedContext) {
 }
 
 func (v vylangListener) ExitPipeModified(c *parser.PipeModifiedContext) {
-	v.pipes.Value().Model = *v.models.Pop()
+	model := v.models.Pop()
+	if model == nil {
+		v.addError(c, fmt.Errorf("invalid model"), ErrTypeWarning)
+	} else {
+		pipe := v.pipes.Value()
+		if pipe == nil {
+			v.addError(c, fmt.Errorf("invalid pipe"), ErrTypeWarning)
+		} else {
+			pipe.Model = *model
+		}
+	}
 }
 
 func (v vylangListener) EnterPathModel(c *parser.PathModelContext) {
@@ -426,4 +553,21 @@ func (v vylangListener) ExitPathModel(c *parser.PathModelContext) {
 func (v vylangListener) ExitPathRelation(c *parser.PathRelationContext) {
 	v.identPath = strings.Join(v.identPaths.Empty(), "")
 	v.identPaths = nil
+}
+
+func (v vylangListener) SyntaxError(recognizer antlr.Recognizer, offendingSymbol interface{}, line, column int, msg string, e antlr.RecognitionException) {
+	v.errors = append(v.errors, ParseError{
+		Err:    errors.New(msg),
+		Line:   line,
+		Column: column,
+	})
+}
+
+func (v vylangListener) ReportAmbiguity(recognizer antlr.Parser, dfa *antlr.DFA, startIndex, stopIndex int, exact bool, ambigAlts *antlr.BitSet, configs antlr.ATNConfigSet) {
+}
+
+func (v vylangListener) ReportAttemptingFullContext(recognizer antlr.Parser, dfa *antlr.DFA, startIndex, stopIndex int, conflictingAlts *antlr.BitSet, configs antlr.ATNConfigSet) {
+}
+
+func (v vylangListener) ReportContextSensitivity(recognizer antlr.Parser, dfa *antlr.DFA, startIndex, stopIndex, prediction int, configs antlr.ATNConfigSet) {
 }

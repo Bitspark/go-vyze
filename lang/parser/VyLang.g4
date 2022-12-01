@@ -10,7 +10,7 @@ contextPipe: 'on' pathModel '->' pipeModified;
 pipe: pipeProperty | pipeMap;
 pipeProperty: pipeTerminal | pipeField;
 pipeNamedProperty: IDENT ':' pipeProperty;
-pipeTerminal: '@id' | '@name' | '@created' | '@data' | '@size' | '@user' | '@value' | '@string' | '@integer' | '@float' | '@boolean';
+pipeTerminal: '@id' | '@name' | '@created' | '@size' | '@user' | '@base64' | '@hex' | '@string' | '@integer' | '@float' | '@boolean' | '@auto' | '@value';
 pipeField: pipeFieldForward | pipeFieldBackward;
 pipeFieldForward: pathRelation '->' pipeModified;
 pipeFieldBackward: '<-' pathRelation pipeModified;
