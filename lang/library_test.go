@@ -387,13 +387,13 @@ func TestLibrary_Uni3(t *testing.T) {
 	lib := NewLibrary(univ)
 
 	pipe, errs := lib.ParsePipe(`on crawljob -> {
-		@id,
+		id,
 		item -> [] {
 			item_id -> @auto
 		}
 	}`)
 	if errs != nil {
-		t.Fatal(errs[0].Err)
+		t.Fatal(errs)
 	}
 	query := QueryNode[any](client, *pipe, "get")
 	rlts, err := query.GetObjects()

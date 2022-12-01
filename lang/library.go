@@ -106,9 +106,6 @@ func (l *Library) ParsePipe(source string) (*Pipe, []ParseError) {
 	if l.terms.Size() != 0 {
 		return nil, []ParseError{{Err: fmt.Sprintf("have extra terms: %s", l.terms.String())}}
 	}
-	if l.pipes.Size() != 1 {
-		return nil, []ParseError{{Err: fmt.Sprintf("invalid pipe")}}
-	}
 
 	return l.pipes.Pop(), l.errors
 }
