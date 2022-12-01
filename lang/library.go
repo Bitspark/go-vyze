@@ -1,7 +1,6 @@
 package lang
 
 import (
-	"errors"
 	"fmt"
 	"github.com/Bitspark/go-vyze/lang/parser"
 	"github.com/Bitspark/go-vyze/system"
@@ -32,7 +31,7 @@ type Library struct {
 }
 
 type ParseError struct {
-	Err    error  `json:"error"`
+	Err    string `json:"error"`
 	Path   string `json:"path"`
 	Line   int    `json:"line"`
 	Column int    `json:"column"`
@@ -71,7 +70,7 @@ func NewLibrary(univ *system.Universe) *Library {
 
 func (l *Library) Parse(source string) []ParseError {
 	if l.univ == nil {
-		return []ParseError{{Err: fmt.Errorf("require universe")}}
+		return []ParseError{{Err: fmt.Sprintf("require universe")}}
 	}
 
 	is := antlr.NewInputStream(source)
@@ -84,7 +83,7 @@ func (l *Library) Parse(source string) []ParseError {
 	antlr.ParseTreeWalkerDefault.Walk(l.listener, vyParser.Definitions())
 
 	if l.terms.Size() != 0 {
-		return []ParseError{{Err: fmt.Errorf("have extra terms: %s", l.terms.String())}}
+		return []ParseError{{Err: fmt.Sprintf("have extra terms: %s", l.terms.String())}}
 	}
 
 	return l.errors
@@ -92,7 +91,7 @@ func (l *Library) Parse(source string) []ParseError {
 
 func (l *Library) ParsePipe(source string) (*Pipe, []ParseError) {
 	if l.univ == nil {
-		return nil, []ParseError{{Err: fmt.Errorf("require universe")}}
+		return nil, []ParseError{{Err: fmt.Sprintf("require universe")}}
 	}
 
 	is := antlr.NewInputStream(source)
@@ -105,10 +104,10 @@ func (l *Library) ParsePipe(source string) (*Pipe, []ParseError) {
 	antlr.ParseTreeWalkerDefault.Walk(l.listener, vyParser.ContextPipe())
 
 	if l.terms.Size() != 0 {
-		return nil, []ParseError{{Err: fmt.Errorf("have extra terms: %s", l.terms.String())}}
+		return nil, []ParseError{{Err: fmt.Sprintf("have extra terms: %s", l.terms.String())}}
 	}
 	if l.pipes.Size() != 1 {
-		return nil, []ParseError{{Err: fmt.Errorf("invalid pipe")}}
+		return nil, []ParseError{{Err: fmt.Sprintf("invalid pipe")}}
 	}
 
 	return l.pipes.Pop(), l.errors
@@ -136,7 +135,7 @@ func (v vylangListener) addError(ctx antlr.ParserRuleContext, err error, errType
 		return
 	}
 	v.errors = append(v.errors, ParseError{
-		Err:    err,
+		Err:    err.Error(),
 		Path:   v.entryNames.Join("."),
 		Line:   ctx.GetStart().GetLine(),
 		Column: ctx.GetStart().GetColumn(),
@@ -557,7 +556,7 @@ func (v vylangListener) ExitPathRelation(c *parser.PathRelationContext) {
 
 func (v vylangListener) SyntaxError(recognizer antlr.Recognizer, offendingSymbol interface{}, line, column int, msg string, e antlr.RecognitionException) {
 	v.errors = append(v.errors, ParseError{
-		Err:    errors.New(msg),
+		Err:    msg,
 		Line:   line,
 		Column: column,
 	})
