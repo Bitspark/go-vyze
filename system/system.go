@@ -126,6 +126,11 @@ type CreateRelationRequest struct {
 	KeyFormat FormatType `json:"keyFormat,omitempty"`
 }
 
+type CreateLayerRequest struct {
+	Abstracts core.IDSet `json:"abstracts"`
+	Name      string     `json:"name"`
+}
+
 type PutResourceRequest struct {
 	ObjectID core.ID        `json:"objectId"`
 	Object   ResourceType   `json:"object"`
@@ -343,6 +348,20 @@ func (c *SystemClient) GetSpecials(id core.ID, self bool, direct bool, indirect 
 		return nil, err
 	}
 	return ids, nil
+}
+
+func (c *SystemClient) CreateLayer(abstractIDs core.IDSet, name string, options *AccessOptions) (Object, error) {
+	u := c.buildURL(fmt.Sprintf("layer"), nil)
+	req := CreateLayerRequest{
+		Abstracts: abstractIDs,
+		Name:      name,
+	}
+	obj := Object{}
+	err := c.postJSON(u, req, &obj, options)
+	if err != nil {
+		return Object{}, err
+	}
+	return obj, nil
 }
 
 func (c *SystemClient) CreateRelation(originID core.ID, targetID core.ID, abstractIDs core.IDSet, name string, accessName string, options *AccessOptions) (Object, error) {
