@@ -195,7 +195,22 @@ func (v vylangListener) EnterPipe(c *parser.PipeContext) {
 			v.relations.Push(nil)
 			v.models.Push(nil)
 		} else {
-			rel := v.univ.GetModel(fmt.Sprintf("%s#%s/", v.models.Value().Mapping.String(), v.identPath), v.univ.Name)
+			rel := v.univ.GetModel(v.identPath, v.univ.Name)
+			if rel == nil {
+				rel = v.univ.GetModel(fmt.Sprintf("%s#%s/", v.models.Value().Mapping.String(), v.identPath), v.univ.Name)
+			}
+			if rel == nil {
+				abses := v.univ.AbstractsOf(v.models.Value().Mapping)
+				for abs := range abses {
+					if strings.Contains(abs, "/") {
+						continue
+					}
+					rel = v.univ.GetModel(fmt.Sprintf("%s#%s/", abs, v.identPath), v.univ.Name)
+					if rel != nil {
+						break
+					}
+				}
+			}
 			var model *system.UniverseObjectInfo
 			if rel == nil {
 				v.addError(c, fmt.Errorf("relation '%s' not found", v.identPath), ErrTypeUniverse)
@@ -341,22 +356,34 @@ func (v vylangListener) ExitPipeTerminal(c *parser.PipeTerminalContext) {
 			Type:  system.NodeTypeValue,
 			Value: &system.ValueNode{Field: system.FieldTypeData, Format: system.FormatTypeBoolean},
 		}
+	case string(system.FormatTypeRaw):
+		p.Node = &system.Node{
+			Type:  system.NodeTypeValue,
+			Value: &system.ValueNode{Field: system.FieldTypeData, Format: system.FormatTypeRaw},
+		}
 	case "auto", "value": // TODO: Eventually remove value
 		field := system.FieldTypeData
-		format := system.FormatTypeBase64
-		if v.univ.HasAbstract(v.models.Value().Mapping, system.ParseUniverseObjectIdentifier("data.@string")) {
-			format = system.FormatTypeString
-		} else if v.univ.HasAbstract(v.models.Value().Mapping, system.ParseUniverseObjectIdentifier("data.@integer")) {
-			format = system.FormatTypeInteger
-		} else if v.univ.HasAbstract(v.models.Value().Mapping, system.ParseUniverseObjectIdentifier("data.@float")) {
-			format = system.FormatTypeFloat
-		} else if v.univ.HasAbstract(v.models.Value().Mapping, system.ParseUniverseObjectIdentifier("data.@boolean")) {
-			format = system.FormatTypeBoolean
-		} else if v.univ.HasAbstract(v.models.Value().Mapping, system.ParseUniverseObjectIdentifier("data.@data")) {
-			format = system.FormatTypeBase64
-		} else {
+		var format system.FormatType
+		if v.models.Value() == nil {
+			v.addError(c, fmt.Errorf("invalid model"), ErrTypeWarning)
 			field = system.FieldTypeID
 			format = system.FormatTypeHex
+		} else {
+			abses := v.univ.AbstractsOf(v.models.Value().Mapping)
+			if abses["data.@string"] {
+				format = system.FormatTypeString
+			} else if abses["data.@integer"] {
+				format = system.FormatTypeInteger
+			} else if abses["data.@float"] {
+				format = system.FormatTypeFloat
+			} else if abses["data.@boolean"] {
+				format = system.FormatTypeBoolean
+			} else if abses["data.@data"] {
+				format = system.FormatTypeBase64
+			} else {
+				field = system.FieldTypeID
+				format = system.FormatTypeHex
+			}
 		}
 		p.Node = &system.Node{
 			Type:  system.NodeTypeValue,
